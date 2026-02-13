@@ -1,0 +1,69 @@
+{
+  "manifest_version": "0.3",
+  "name": "stobo-mcp",
+  "display_name": "Stobo SEO & AEO Audit",
+  "version": "0.4.0",
+  "description": "AI-powered SEO and AEO audit for websites. 30 SEO checks, 7 AEO checks, llms.txt/robots.txt/sitemap generators, brand voice extraction, and content optimization.",
+  "long_description": "Stobo helps websites get discovered by AI assistants (ChatGPT, Perplexity, Claude) and search engines. Audit any website with 30 SEO checks and 7 AEO checks, detect blogs, map sitemaps, and get actionable recommendations. Generate llms.txt, robots.txt, sitemap.xml, and date markup to fix issues instantly. Extract brand voice from existing content and rewrite articles for better AI visibility.",
+  "author": {
+    "name": "Stobo",
+    "email": "hello@trystobo.com",
+    "url": "https://trystobo.com"
+  },
+  "server": {
+    "type": "python",
+    "entry_point": "stobo_mcp/server.py",
+    "mcp_config": {
+      "command": "stobo-mcp",
+      "env": {
+        "STOBO_API_KEY": "${user_config.api_key}",
+        "STOBO_BASE_URL": "${user_config.base_url}"
+      }
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stobo-app/stobo-mcp.git"
+  },
+  "homepage": "https://trystobo.com",
+  "documentation": "https://github.com/stobo-app/stobo-mcp#readme",
+  "support": "https://github.com/stobo-app/stobo-mcp/issues",
+  "tools": [
+    { "name": "audit_site", "description": "Analyze a website's SEO and AI visibility (30 SEO + 7 AEO checks)" },
+    { "name": "audit_article", "description": "Analyze a single blog post or article (7 SEO + 14 AEO checks)" },
+    { "name": "audit_freshness", "description": "Check date markup across blog posts via sitemap" },
+    { "name": "generate_llms_txt", "description": "Create an llms.txt file for AI discoverability" },
+    { "name": "generate_robots_txt", "description": "Create a robots.txt that welcomes AI crawlers" },
+    { "name": "generate_sitemap", "description": "Create a sitemap.xml by crawling the website" },
+    { "name": "generate_freshness_code", "description": "Create date markup for content freshness" },
+    { "name": "rewrite_article", "description": "Rewrite an article for better SEO and AI visibility" },
+    { "name": "extract_tone", "description": "Analyze brand writing style from blog posts" },
+    { "name": "get_credits", "description": "Check remaining credit balance" },
+    { "name": "check_connection", "description": "Verify API connectivity" }
+  ],
+  "keywords": ["seo", "aeo", "audit", "llms-txt", "ai-visibility", "content-optimization"],
+  "license": "MIT",
+  "privacy_policies": ["https://trystobo.com/privacy"],
+  "user_config": {
+    "api_key": {
+      "type": "string",
+      "title": "API Key",
+      "description": "Your Stobo API key from trystobo.com (optional — free tools work without it)",
+      "sensitive": true,
+      "required": false
+    },
+    "base_url": {
+      "type": "string",
+      "title": "API Base URL",
+      "description": "Stobo API endpoint (default: https://api.trystobo.com)",
+      "required": false,
+      "default": "https://api.trystobo.com"
+    }
+  },
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "python": ">=3.10"
+    }
+  }
+}
