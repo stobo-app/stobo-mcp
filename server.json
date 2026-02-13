@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.stobo-app/seo-audit",
+  "title": "Stobo SEO & AEO Audit",
+  "description": "AI-powered SEO and AEO audit for websites",
+  "websiteUrl": "https://trystobo.com",
+  "repository": {
+    "url": "https://github.com/stobo-app/stobo-mcp",
+    "source": "github"
+  },
+  "version": "0.4.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "stobo-mcp",
+      "version": "0.4.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "STOBO_API_KEY",
+          "description": "API key from trystobo.com (optional — free tools work without it)",
+          "isRequired": false,
+          "isSecret": true
+        },
+        {
+          "name": "STOBO_BASE_URL",
+          "description": "API base URL (default: https://api.trystobo.com)",
+          "isRequired": false,
+          "isSecret": false
+        }
+      ]
+    }
+  ]
+}

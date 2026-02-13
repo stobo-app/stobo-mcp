@@ -1,0 +1,46 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "stobo-mcp"
+version = "0.4.0"
+description = "MCP server for Stobo — AI-powered SEO/AEO content optimization"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "Stobo", email = "hello@trystobo.com"}]
+keywords = ["mcp", "seo", "aeo", "ai", "claude", "model-context-protocol"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Internet :: WWW/HTTP",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "mcp>=1.0.0",
+    "stobo>=0.3.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.8.0",
+]
+
+[project.urls]
+Homepage = "https://trystobo.com"
+Documentation = "https://trystobo.com"
+Repository = "https://github.com/stobo-app/stobo-mcp"
+Issues = "https://github.com/stobo-app/stobo-mcp/issues"
+
+[project.scripts]
+stobo-mcp = "stobo_mcp.server:main"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
