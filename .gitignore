@@ -11,3 +11,4 @@ build/
 venv/
 .DS_Store
 .claude/
+*.mcpb
