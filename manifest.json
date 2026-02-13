@@ -25,6 +25,7 @@
     "type": "git",
     "url": "https://github.com/stobo-app/stobo-mcp.git"
   },
+  "icon": "icon.png",
   "homepage": "https://trystobo.com",
   "documentation": "https://github.com/stobo-app/stobo-mcp#readme",
   "support": "https://github.com/stobo-app/stobo-mcp/issues",
