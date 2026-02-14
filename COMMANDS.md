@@ -1,6 +1,6 @@
 # Stobo MCP Commands
 
-## User-facing (11)
+## User-facing (10)
 
 | Command | What it does | Free? |
 |---------|-------------|-------|
@@ -14,7 +14,6 @@
 | `extract_tone` | Analyze your brand's writing style from blog posts | No |
 | `audit_freshness` | Check how many blog posts have proper date markup | Yes |
 | `get_credits` | Check how many credits you have left | No |
-| `check_connection` | Verify API connectivity (diagnostic) | Yes |
 
 ## Admin-facing (13) — removed from MCP, still available via CLI/API
 
