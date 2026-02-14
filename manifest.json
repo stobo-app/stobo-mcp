@@ -2,7 +2,7 @@
   "manifest_version": "0.3",
   "name": "stobo-mcp",
   "display_name": "Stobo SEO & AEO Audit",
-  "version": "0.4.0",
+  "version": "0.3.7",
   "description": "AI-powered SEO and AEO audit for websites. 30 SEO checks, 7 AEO checks, llms.txt/robots.txt/sitemap generators, brand voice extraction, and content optimization.",
   "long_description": "Stobo helps websites get discovered by AI assistants (ChatGPT, Perplexity, Claude) and search engines. Audit any website with 30 SEO checks and 7 AEO checks, detect blogs, map sitemaps, and get actionable recommendations. Generate llms.txt, robots.txt, sitemap.xml, and date markup to fix issues instantly. Extract brand voice from existing content and rewrite articles for better AI visibility.",
   "author": {
