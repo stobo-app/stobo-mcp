@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.7
+
+- Smarter error messages: auth failures now point users to https://trystobo.com
+- Distinct messages for missing API key, invalid/expired key, insufficient credits, and rate limits
+- Bump `stobo` dependency to >=0.3.5
+
 ## 0.4.0
 
 - Public GitHub repo for MCP Registry listing

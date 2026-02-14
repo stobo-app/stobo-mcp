@@ -20,7 +20,7 @@ classifiers = [
 ]
 dependencies = [
     "mcp>=1.0.0",
-    "stobo>=0.3.4",
+    "stobo>=0.3.5",
 ]
 
 [project.optional-dependencies]
