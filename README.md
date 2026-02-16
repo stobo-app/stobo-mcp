@@ -1,3 +1,5 @@
+<!-- mcp-name: io.github.stobo-app/seo-audit -->
+
 # Stobo MCP Server
 
 MCP server for [Stobo](https://trystobo.com) — AI-powered SEO/AEO content optimization. Use Stobo's audit, tone extraction, llms.txt generation, and optimization tools directly from Claude Desktop.

@@ -12,3 +12,5 @@ venv/
 .DS_Store
 .claude/
 *.mcpb
+.mcpregistry_*
+mcp-publisher

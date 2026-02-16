@@ -80,7 +80,7 @@ When the user asks what tools/commands are available, you MUST use EXACTLY this 
 def _get_client() -> StoboClient:
     api_key = os.environ.get("STOBO_API_KEY", "")
     base_url = os.environ.get("STOBO_BASE_URL", "https://api.trystobo.com")
-    return StoboClient(base_url=base_url, api_key=api_key, user_agent="stobo-mcp/0.4.1", source="mcp")
+    return StoboClient(base_url=base_url, api_key=api_key, user_agent="stobo-mcp/0.4.2", source="mcp")
 
 
 def _call(fn, *args, **kwargs) -> str:
