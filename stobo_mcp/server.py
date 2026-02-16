@@ -6,8 +6,14 @@ import json
 import os
 
 from mcp.server.fastmcp import FastMCP
+from mcp.types import ToolAnnotations
 
 from stobo.client import AuthError, RateLimitError, StoboAPIError, StoboClient
+
+# ── Annotations ─────────────────────────────────────────────────────
+
+READ_ONLY = ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=True)
+WRITE = ToolAnnotations(readOnlyHint=False, destructiveHint=False, openWorldHint=True)
 
 mcp = FastMCP(
     "Stobo",
@@ -74,7 +80,7 @@ When the user asks what tools/commands are available, you MUST use EXACTLY this 
 def _get_client() -> StoboClient:
     api_key = os.environ.get("STOBO_API_KEY", "")
     base_url = os.environ.get("STOBO_BASE_URL", "https://api.trystobo.com")
-    return StoboClient(base_url=base_url, api_key=api_key, user_agent="stobo-mcp/0.3.9", source="mcp")
+    return StoboClient(base_url=base_url, api_key=api_key, user_agent="stobo-mcp/0.4.1", source="mcp")
 
 
 def _call(fn, *args, **kwargs) -> str:
@@ -117,14 +123,14 @@ def _call(fn, *args, **kwargs) -> str:
 # ── Audits ───────────────────────────────────────────────────────────
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY)
 def audit_site(url: str) -> str:
     """Analyze a website's SEO performance and AI visibility. Runs 30 SEO checks, 7 AEO checks, detects your blog, and maps your sitemap. This is the main tool — use it for any website or homepage. Results are cached for 24 hours."""
     client = _get_client()
     return _call(client.audit_site, url)
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY)
 def audit_article(
     url: str,
     keyword: str | None = None,
@@ -138,28 +144,28 @@ def audit_article(
 # ── Fix generators ───────────────────────────────────────────────────
 
 
-@mcp.tool()
+@mcp.tool(annotations=WRITE)
 def generate_llms_txt(url: str) -> str:
     """Create an llms.txt file to help AI assistants understand your website. Use when the audit shows your llms.txt is missing or incomplete. Returns ready-to-deploy content for your domain root."""
     client = _get_client()
     return _call(client.generate_llms_txt, url)
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY)
 def generate_robots_txt(url: str) -> str:
     """Create a robots.txt that welcomes AI crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.). Use when the audit shows AI crawlers are being blocked. Free, instant."""
     client = _get_client()
     return _call(client.generate_robots_txt, url)
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY)
 def generate_sitemap(url: str, max_urls: int = 200) -> str:
     """Create a sitemap.xml by crawling your website's pages. Use when the audit shows your sitemap is missing or incomplete. Free."""
     client = _get_client()
     return _call(client.generate_sitemap, url, max_urls=max_urls)
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY)
 def generate_freshness_code(url: str) -> str:
     """Create date markup so AI knows your content is up to date. Generates a ready-to-use code snippet with publish and update dates. Use when the audit shows missing freshness signals. Free, instant."""
     client = _get_client()
@@ -169,15 +175,7 @@ def generate_freshness_code(url: str) -> str:
 # ── Content optimization ─────────────────────────────────────────────
 
 
-# optimize — disabled for now (long-running, not great UX in MCP)
-# @mcp.tool()
-# def optimize(url: str, customer_id: str | None = None) -> str:
-#     """Rewrite an article to improve its SEO and AI visibility while keeping your brand voice."""
-#     client = _get_client()
-#     return _call(client.optimize, url, customer_id=customer_id, sync=True)
-
-
-@mcp.tool()
+@mcp.tool(annotations=WRITE)
 def rewrite_article(
     url: str,
     customer_id: str | None = None,
@@ -187,7 +185,7 @@ def rewrite_article(
     return _call(client.optimize, url, customer_id=customer_id, sync=True)
 
 
-@mcp.tool()
+@mcp.tool(annotations=WRITE)
 def extract_tone(
     blog_url: str,
     customer_id: str | None = None,
@@ -203,7 +201,7 @@ def extract_tone(
 # ── Freshness audit ──────────────────────────────────────────────────
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY)
 def audit_freshness(sitemap_url: str, limit: int = 50) -> str:
     """Check how many of your blog posts have proper date markup. Scans your sitemap and reports which pages are missing freshness signals that AI assistants look for."""
     client = _get_client()
@@ -213,7 +211,7 @@ def audit_freshness(sitemap_url: str, limit: int = 50) -> str:
 # ── Credits ──────────────────────────────────────────────────────────
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY)
 def get_credits() -> str:
     """Check how many credits you have left. Shows your plan, usage, and remaining balance."""
     client = _get_client()
@@ -223,7 +221,7 @@ def get_credits() -> str:
 # ── Diagnostics ─────────────────────────────────────────────────────
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY)
 def check_connection() -> str:
     """Check if the Stobo API is reachable. Use this to diagnose connection issues before running audits."""
     import httpx
