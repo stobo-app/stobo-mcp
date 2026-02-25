@@ -10,4 +10,8 @@ build/
 .env
 .env.*
 .DS_Store
+.github/
+tests/
+COMMANDS.md
+server.json
 stobo-mcp.mcpb
