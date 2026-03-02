@@ -12,7 +12,9 @@ from stobo.client import AuthError, RateLimitError, StoboAPIError, StoboClient
 
 # ── Annotations ─────────────────────────────────────────────────────
 
-READ_ONLY = ToolAnnotations(readOnlyHint=True, destructiveHint=False, openWorldHint=True)
+READ_ONLY = ToolAnnotations(
+    readOnlyHint=True, destructiveHint=False, openWorldHint=True
+)
 WRITE = ToolAnnotations(readOnlyHint=False, destructiveHint=False, openWorldHint=True)
 
 mcp = FastMCP(
@@ -80,7 +82,9 @@ When the user asks what tools/commands are available, you MUST use EXACTLY this 
 def _get_client() -> StoboClient:
     api_key = os.environ.get("STOBO_API_KEY", "")
     base_url = os.environ.get("STOBO_BASE_URL", "https://api.trystobo.com")
-    return StoboClient(base_url=base_url, api_key=api_key, user_agent="stobo-mcp/0.4.2", source="mcp")
+    return StoboClient(
+        base_url=base_url, api_key=api_key, user_agent="stobo-mcp/0.4.2", source="mcp"
+    )
 
 
 def _call(fn, *args, **kwargs) -> str:
@@ -104,10 +108,12 @@ def _call(fn, *args, **kwargs) -> str:
             )
         return json.dumps({"error": msg, "status_code": e.status_code})
     except RateLimitError as e:
-        return json.dumps({
-            "error": "Rate limit reached. Please wait a moment and try again.",
-            "status_code": e.status_code,
-        })
+        return json.dumps(
+            {
+                "error": "Rate limit reached. Please wait a moment and try again.",
+                "status_code": e.status_code,
+            }
+        )
     except StoboAPIError as e:
         if e.status_code == 402:
             msg = (
@@ -138,7 +144,9 @@ def audit_article(
 ) -> str:
     """Analyze a single blog post or article for SEO and AI readability. Runs 7 SEO and 14 AEO checks. Only use this for specific article URLs (e.g. /blog/my-post), not homepages."""
     client = _get_client()
-    return _call(client.audit_article, url, keyword=keyword, use_playwright=use_playwright)
+    return _call(
+        client.audit_article, url, keyword=keyword, use_playwright=use_playwright
+    )
 
 
 # ── Fix generators ───────────────────────────────────────────────────
@@ -194,7 +202,10 @@ def extract_tone(
     """Analyze your brand's writing style from blog posts. Reads up to 10 articles and creates a voice profile describing your tone, vocabulary, and style patterns."""
     client = _get_client()
     return _call(
-        client.extract_tone, blog_url, customer_id=customer_id, max_articles=max_articles
+        client.extract_tone,
+        blog_url,
+        customer_id=customer_id,
+        max_articles=max_articles,
     )
 
 
@@ -240,7 +251,9 @@ def check_connection() -> str:
     except httpx.ConnectError as e:
         result["status"] = "connection_refused"
         result["error"] = str(e)
-        result["fix"] = "The API server is unreachable. Check your network or try again later."
+        result["fix"] = (
+            "The API server is unreachable. Check your network or try again later."
+        )
     except httpx.TimeoutException:
         result["status"] = "timeout"
         result["error"] = "Request timed out after 10 seconds"
