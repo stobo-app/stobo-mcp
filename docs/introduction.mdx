@@ -1,153 +1,84 @@
 ---
 title: Introduction
-description: AI-powered SEO and AEO auditing for your website through the Model Context Protocol
+description: Fix your SEO and AI visibility in hours, not months. A framework for founders who ship fast and need to be found.
 ---
 
-# Introduction to Stobo MCP
+# You built it. Now make it findable.
 
-Stobo MCP is an MCP server that gives AI assistants direct access to Stobo's SEO and AEO audit engine. Use it from Claude Desktop, Cursor, VS Code, Windsurf, and any MCP-compatible client to audit, fix, and optimize your website for search engines and AI discovery.
+Shipping was the easy part. Getting your first ten users, your first hundred, your first mention in an AI answer. That's where most founders get stuck.
 
-<Note>
-  Most tools are free and work without an API key. Premium features like llms.txt generation and content optimization require credits.
-</Note>
+## The search game changed
 
-## What is Stobo MCP?
+When someone asks ChatGPT, Perplexity, or Claude a question in your space, the answer comes from somewhere. A website the AI decided to trust and cite. Getting your content into those answers is what the industry calls Answer Engine Optimization, or AEO.
 
-Stobo MCP connects AI tools to [Stobo](https://trystobo.com)'s optimization platform through the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/introduction), an open standard for AI-tool integration. Instead of manually fetching web pages and parsing HTML, your AI assistant can run comprehensive audits and generate fixes in a single tool call.
+This matters more than you think. A Microsoft Clarity study found that visitors from AI search engines convert at 3x the rate of other channels. A Yext study analyzing 6.8 million AI citations revealed that 86% come from sources you already control: your website, your listings, your own content. Not someone else's link to you.
 
-## Key features
+We followed this methodology on our own site and ranked first in ChatGPT search results in 16 days. Not through a trick. Through sound technical foundations. And here's the thing: the same foundations that serve Google also serve AI engines. SEO and AEO are converging. You don't need two strategies. You need one, done right.
 
-<CardGroup cols={2}>
-  <Card title="Complete SEO + AEO audits" icon="magnifying-glass-chart">
-    30 SEO checks across 7 categories (380 points) plus 7 AEO checks for AI discoverability. Get combined scores, category breakdowns, and actionable recommendations.
-  </Card>
-  
-  <Card title="Instant fix generation" icon="wrench">
-    Generate ready-to-deploy llms.txt, robots.txt, sitemap.xml, and date markup files. Fix failing audit checks without leaving your AI editor.
-  </Card>
-  
-  <Card title="Brand-aware content optimization" icon="paintbrush">
-    Extract your writing style from existing blog posts and rewrite articles to improve SEO and AI visibility while maintaining your brand voice.
-  </Card>
-  
-  <Card title="Server-side metrics" icon="server">
-    Get Core Web Vitals, TTFB timing, HTTP status codes, and Flesch-Kincaid readability scores that can't be computed from raw HTML alone.
-  </Card>
-  
-  <Card title="82% fewer tokens" icon="chart-line-down">
-    One audit tool call replaces dozens of web fetches and hundreds of thousands of tokens of raw HTML parsing. More efficient, faster results.
-  </Card>
-  
-  <Card title="Free to start" icon="circle-check">
-    All audit tools and most fix generators work without an API key or account. Get started immediately, upgrade when you need premium features.
-  </Card>
-</CardGroup>
+## This favors new entrants
 
-## What you can do
+The old game rewarded whoever had the most backlinks and the longest head start. AI citation rewards the clearest answer, the best structure, the freshest content. That's a game you can win starting today.
 
-### Website audits
+## The methodology
 
-Run a full 30-check SEO + 7-check AEO audit on any website. Get a combined score, category breakdowns, blog detection, sitemap discovery, and targeted recommendations.
+Stobo gives your AI assistant direct access to a full SEO and AEO audit engine. No dashboard to learn. No manual HTML parsing. You type what you need in natural language, and the work gets done. Here's how.
 
-```bash
-# In your AI assistant
-"Audit phantombuster.com"
-"Check https://example.com for AI visibility"
+### 1. See what's broken
+
+Run a full audit in one line:
+
+```
+stobo audit my website: example.com
 ```
 
-### Article deep-dives
+30 SEO checks across 7 categories, plus 7 AEO checks for AI visibility. You get a score, a grade, and a prioritized list of what to fix first. Free. No account needed.
 
-Analyze specific blog posts with 7 SEO and 14 AEO checks. Optionally target a keyword to get keyword-specific recommendations.
+Everything can be fixed in a couple of hours. Ask your AI (Claude, Cursor, Windsurf) to write you a fix plan. It already has all the data from the audit.
 
-```bash
-"Audit https://example.com/blog/my-post"
-"Check this article targeting 'content marketing'"
+### 2. Fix the foundations
+
+Your AI generates all the code. Start with the core basics:
+
+```
+"Generate a robots.txt that allows AI crawlers"
+"My sitemap is missing, create one"
+"Add freshness markup to my blog posts"
 ```
 
-### Fix failing checks
+robots.txt lets crawlers in. sitemap.xml maps your content. Freshness markup proves your pages are current. These three fixes alone can improve specific check scores by 2-3x.
 
-Generate llms.txt, robots.txt, sitemap.xml, and date markup to fix issues found in audits. All files are ready to deploy.
+### 3. Optimize your content
 
-```bash
-"Generate an llms.txt for https://example.com"
-"Create a robots.txt that allows AI crawlers"
-"My sitemap is missing — create one"
 ```
-
-### Content freshness tracking
-
-Scan your sitemap and identify which blog posts are missing date markup that AI assistants look for.
-
-```bash
-"Check freshness across my blog"
-"Which posts are missing date markup?"
-```
-
-### Brand voice extraction
-
-Analyze up to 10 blog posts to build a tone profile describing your vocabulary, style patterns, and writing characteristics.
-
-```bash
-"Extract the brand voice from https://example.com/blog"
-"What's my writing style?"
-```
-
-### Article rewriting
-
-Rewrite articles to improve SEO and AI visibility while keeping your brand voice. Audits first, then applies targeted fixes.
-
-```bash
+"Generate 5 FAQs for my homepage with schema markup"
+"Extract the brand voice from my blog"
 "Rewrite this article for better AI visibility"
-"Optimize https://example.com/blog/guide"
 ```
 
-## Why MCP instead of web_fetch?
+Add FAQ schema to help search engines surface your answers directly. Extract your brand voice so rewrites sound like you, not like a template. Improve article structure, add direct answers, increase citation density. Your voice stays. The foundations get stronger.
 
-Without Stobo, auditing a site means fetching every page with `web_fetch`, pasting raw HTML into context, and asking the AI to parse it. A single site audit would cost **~71,000 tokens** and **6 separate fetches**.
+### 4. Ship and audit again
 
-With Stobo MCP, the same audit is **one tool call, ~20,000 tokens**.
+Deploy the fixes. Publish the rewrites. Run the audit again. See the score move.
 
-| Task | Manual (web_fetch) | Stobo MCP |
-|------|-------------------|----------|
-| Full site audit (30 checks) | ~71,000 tokens / 6 fetches | ~20,000 tokens / 1 call |
-| Freshness audit | ~60,000 tokens / 20 fetches | ~3,000 tokens / 1 call |
-| llms.txt generation | ~35,000 tokens / 6 fetches | ~3,000 tokens / 1 call |
-| Tone extraction | ~35,000 tokens / 10 fetches | ~5,000 tokens / 1 call |
-| **All tools combined** | **~264,500 tokens / 56 fetches** | **~47,000 tokens / 9 calls** |
+People who follow this cycle typically go from Grade D to Grade B. Rinse. Repeat.
 
-That's **82% fewer tokens** and **84% fewer network calls**.
+## Works where you already work
 
-Plus, Stobo computes metrics the AI can't get from raw HTML:
+Stobo runs inside Claude Desktop, Cursor, VS Code, Windsurf, and any editor that supports MCP. You don't open a new tool. You type what you need in natural language.
 
-- Core Web Vitals (via Playwright)
-- TTFB timing
-- HTTP status codes for all links
-- Flesch-Kincaid readability scoring
+A single Stobo call does the work of 6 manual web fetches, using 82% fewer tokens. It also computes metrics you can't get from raw HTML: Core Web Vitals, server response time, and readability scores.
 
 ## Pricing
 
-| Tool | Cost |
-|------|------|
-| `audit_site`, `audit_article`, `audit_freshness` | Free |
-| `generate_robots_txt`, `generate_sitemap`, `generate_freshness_code` | Free |
-| `check_connection` | Free |
-| `generate_llms_txt` | 500 credits |
-| `extract_tone` | 500 credits |
-| `rewrite_article` | 1,000 credits |
-| `get_credits` | Requires API key |
+Audits, sitemaps, robots.txt, and freshness checks are all free. No account required. Premium features like llms.txt generation, content rewriting, and tone extraction start at $14/month. See the full breakdown on the [pricing page](/guides/pricing).
 
-<Tip>
-  Free tools work without an account or API key. Get credits at [trystobo.com](https://trystobo.com).
-</Tip>
+## Start now
 
-## Next steps
-
-<CardGroup cols={2}>
-  <Card title="Installation" icon="download" href="/installation">
-    Install Stobo MCP and configure it for your AI editor
-  </Card>
-  
-  <Card title="Quick start" icon="rocket" href="/quickstart">
-    Run your first audit and generate fixes in minutes
+<CardGroup cols={1}>
+  <Card title="Run your first audit" icon="rocket" href="/quickstart">
+    Install Stobo, run your first audit, and generate fixes in minutes.
   </Card>
 </CardGroup>
+
+Or [set up the full installation first](/installation).
