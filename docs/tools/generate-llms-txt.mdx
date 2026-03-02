@@ -1,0 +1,140 @@
+---
+title: generate_llms_txt
+description: Create an llms.txt file to help AI assistants understand your website
+---
+
+Create an llms.txt file so AI assistants (ChatGPT, Claude, Perplexity) can understand your website structure and content.
+
+## Overview
+
+`generate_llms_txt` creates a spec-compliant llms.txt file:
+
+- **Automatic content discovery** — crawls your site to understand structure
+- **Spec-compliant format** — follows the llms.txt standard
+- **Ready to deploy** — returns content you can paste into /llms.txt
+- **AI optimized** — helps AI assistants cite your content correctly
+
+<Warning>
+This tool requires an API key and costs 500 credits per generation.
+</Warning>
+
+## Parameters
+
+<ParamField path="url" type="string" required>
+  Your website URL (domain or full URL). The tool will crawl from here to discover your site structure.
+</ParamField>
+
+## Example prompts
+
+```
+Generate an llms.txt for https://example.com
+```
+
+```
+My llms.txt check failed — fix it
+```
+
+```
+Create an llms.txt file for my site
+```
+
+## Response structure
+
+The tool returns a JSON object with:
+
+<ResponseField name="content" type="string">
+  The complete llms.txt file content, ready to deploy at /llms.txt on your domain root
+</ResponseField>
+
+<ResponseField name="pages_analyzed" type="number">
+  Number of pages crawled to build the file
+</ResponseField>
+
+<ResponseField name="sections" type="array">
+  List of sections included in the llms.txt
+</ResponseField>
+
+## Usage example
+
+```python
+# How the tool is called in the MCP server
+@mcp.tool(annotations=WRITE)
+def generate_llms_txt(url: str) -> str:
+    """Create an llms.txt file to help AI assistants understand your website."""
+    client = _get_client()
+    return _call(client.generate_llms_txt, url)
+```
+
+## What is llms.txt?
+
+llms.txt is a standardized file format that helps AI assistants understand your website:
+
+- **Site summary** — brief description of what your site offers
+- **Key pages** — important pages AI should know about
+- **Content structure** — how your content is organized
+- **Update frequency** — when content is typically refreshed
+
+Example llms.txt structure:
+
+```
+# Example Company
+
+Example Company provides AI-powered tools for developers.
+
+## Key pages
+
+- Homepage: https://example.com
+- Documentation: https://example.com/docs
+- Blog: https://example.com/blog
+- API Reference: https://example.com/api
+
+## Content sections
+
+### Documentation
+Comprehensive guides and tutorials for all features.
+Location: /docs
+
+### Blog
+Product updates, tutorials, and industry insights.
+Location: /blog
+Update frequency: Weekly
+```
+
+## When to use
+
+Use `generate_llms_txt` when:
+
+- **audit_site shows llms.txt is missing** — most common trigger
+- **Launching a new site** — include from day one for better AI visibility
+- **Major site restructure** — regenerate after significant changes
+- **Content strategy changes** — update when adding new sections
+
+<Tip>
+Run [audit_site](/tools/audit-site) first to confirm llms.txt is missing or needs updating.
+</Tip>
+
+## Deployment
+
+After generating the file:
+
+1. Copy the `content` from the response
+2. Save it as `llms.txt` at your domain root
+3. Deploy to `https://yourdomain.com/llms.txt`
+4. Verify it's accessible publicly
+
+<Note>
+The file must be at your domain root (/llms.txt), not in a subdirectory.
+</Note>
+
+## Cost
+
+Generating an llms.txt costs **500 credits**. This includes:
+
+- Crawling up to 50 pages of your site
+- Content analysis and summarization
+- Spec-compliant file generation
+
+## Next steps
+
+- [audit_site](/tools/audit-site) — verify llms.txt is working after deployment
+- [generate_sitemap](/tools/generate-sitemap) — help AI assistants discover all your content

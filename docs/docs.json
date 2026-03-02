@@ -1,0 +1,73 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Stobo MCP",
+  "theme": "palm",
+  "colors": {
+    "primary": "#2563eb",
+    "light": "#60a5fa",
+    "dark": "#1e40af"
+  },
+  "favicon": "/favicon.png",
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/stobo-app/stobo-mcp"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/stobo-app/stobo-mcp",
+      "website": "https://trystobo.com"
+    }
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Tools Reference",
+            "pages": [
+              "tools/overview",
+              "tools/audit-site",
+              "tools/audit-article",
+              "tools/audit-freshness",
+              "tools/generate-llms-txt",
+              "tools/generate-robots-txt",
+              "tools/generate-sitemap",
+              "tools/generate-freshness-code",
+              "tools/extract-tone",
+              "tools/rewrite-article",
+              "tools/get-credits",
+              "tools/check-connection"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/workflows",
+              "guides/pricing",
+              "guides/editor-setup"
+            ]
+          },
+          {
+            "group": "Advanced",
+            "pages": [
+              "advanced/troubleshooting",
+              "advanced/environment-variables",
+              "advanced/error-handling"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

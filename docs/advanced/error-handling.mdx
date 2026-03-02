@@ -1,0 +1,259 @@
+---
+title: Error handling
+description: Understanding error types and handling patterns in Stobo MCP
+---
+
+Stobo MCP uses a structured error handling system with specific error types for different failure scenarios.
+
+## Error types
+
+All errors are handled by the `_call` wrapper function in `server.py:86-120`, which catches exceptions from the Stobo client and returns structured JSON responses.
+
+### AuthError
+
+Raised when authentication fails due to missing, invalid, or expired API keys.
+
+**Status codes:** `401`, `403`
+
+**Common scenarios:**
+
+<AccordionGroup>
+  <Accordion title="No API key configured">
+    When `STOBO_API_KEY` is not set and a paid tool is called:
+
+    ```json
+    {
+      "error": "No API key configured. Get your free API key at https://trystobo.com — then add STOBO_API_KEY to your MCP server config.",
+      "status_code": 401
+    }
+    ```
+
+    **Resolution:**
+    1. Sign up at [trystobo.com](https://trystobo.com)
+    2. Generate an API key from Settings > API Keys
+    3. Add to your MCP config's `env` section
+    4. Restart your editor
+  </Accordion>
+
+  <Accordion title="Invalid or expired key">
+    When an API key is configured but invalid:
+
+    ```json
+    {
+      "error": "Your API key is invalid or expired. Log in at https://trystobo.com to get a new one, then update STOBO_API_KEY in your MCP server config.",
+      "status_code": 401
+    }
+    ```
+
+    **Resolution:**
+    1. Log in to [trystobo.com](https://trystobo.com)
+    2. Revoke the old key
+    3. Generate a new API key
+    4. Update your MCP config
+    5. Restart your editor
+  </Accordion>
+</AccordionGroup>
+
+**Implementation:**
+
+```python
+except AuthError as e:
+    has_key = bool(os.environ.get("STOBO_API_KEY", ""))
+    if not has_key:
+        msg = (
+            "No API key configured. "
+            "Get your free API key at https://trystobo.com — "
+            "then add STOBO_API_KEY to your MCP server config."
+        )
+    else:
+        msg = (
+            "Your API key is invalid or expired. "
+            "Log in at https://trystobo.com to get a new one, "
+            "then update STOBO_API_KEY in your MCP server config."
+        )
+    return json.dumps({"error": msg, "status_code": e.status_code})
+```
+
+### RateLimitError
+
+Raised when you exceed the API rate limits.
+
+**Status code:** `429`
+
+**Response format:**
+
+```json
+{
+  "error": "Rate limit reached. Please wait a moment and try again.",
+  "status_code": 429
+}
+```
+
+**Handling:**
+
+Rate limits reset quickly. Simply wait a moment and retry the request. Normal conversational use stays well within limits.
+
+**Implementation:**
+
+```python
+except RateLimitError as e:
+    return json.dumps({
+        "error": "Rate limit reached. Please wait a moment and try again.",
+        "status_code": e.status_code,
+    })
+```
+
+<Note>
+  Rate limiting is applied per API key. Free tools without authentication have separate, more generous limits.
+</Note>
+
+### StoboAPIError
+
+Generic API error for various failure scenarios.
+
+**Status codes:** Various (most commonly `402`, `400`, `404`, `500`)
+
+<AccordionGroup>
+  <Accordion title="Payment required (402)">
+    When you've exhausted your credit balance:
+
+    ```json
+    {
+      "error": "You've run out of credits. Top up at https://trystobo.com to continue using premium tools.",
+      "status_code": 402
+    }
+    ```
+
+    **Affected tools:**
+    - `generate_llms_txt` (500 credits)
+    - `extract_tone` (500 credits)
+    - `rewrite_article` (1,000 credits)
+
+    **Resolution:**
+    - Top up credits at [trystobo.com](https://trystobo.com)
+    - Free tools continue working without credits
+    - Use `get_credits` to check your balance
+  </Accordion>
+
+  <Accordion title="Generic API errors">
+    For all other API errors (validation, not found, server errors):
+
+    ```json
+    {
+      "error": "<error detail from API>",
+      "status_code": 400
+    }
+    ```
+
+    The `error` field contains the specific error message from the Stobo API's `detail` field.
+  </Accordion>
+</AccordionGroup>
+
+**Implementation:**
+
+```python
+except StoboAPIError as e:
+    if e.status_code == 402:
+        msg = (
+            "You've run out of credits. "
+            "Top up at https://trystobo.com to continue using premium tools."
+        )
+        return json.dumps({"error": msg, "status_code": 402})
+    return json.dumps({"error": e.detail, "status_code": e.status_code})
+```
+
+### Generic exceptions
+
+Catches any unexpected errors not covered by specific error types.
+
+**Response format:**
+
+```json
+{
+  "error": "<exception message>"
+}
+```
+
+**Implementation:**
+
+```python
+except Exception as e:
+    return json.dumps({"error": str(e)})
+```
+
+<Warning>
+  Generic exceptions typically indicate unexpected failures (network issues, malformed responses, etc.). If you encounter these frequently, please report them to Stobo support.
+</Warning>
+
+## Error handling patterns
+
+### In tool implementations
+
+All tools use the `_call` wrapper to ensure consistent error handling:
+
+```python
+@mcp.tool(annotations=READ_ONLY)
+def audit_site(url: str) -> str:
+    """Analyze a website's SEO performance and AI visibility."""
+    client = _get_client()
+    return _call(client.audit_site, url)
+```
+
+The `_call` function:
+1. Executes the client method
+2. Serializes the result to JSON
+3. Catches and transforms exceptions into user-friendly error messages
+4. Returns structured JSON with error details and status codes
+
+### Connection diagnostics
+
+The `check_connection` tool provides detailed diagnostics for connectivity issues:
+
+```python
+try:
+    resp = httpx.get(f"{base_url}/api/v1/health", timeout=10)
+    result["status"] = "ok" if resp.status_code == 200 else "error"
+    result["http_code"] = resp.status_code
+except httpx.ConnectError as e:
+    result["status"] = "connection_refused"
+    result["error"] = str(e)
+    result["fix"] = "The API server is unreachable. Check your network or try again later."
+except httpx.TimeoutException:
+    result["status"] = "timeout"
+    result["error"] = "Request timed out after 10 seconds"
+    result["fix"] = "The API server is slow or unreachable. Check your network."
+```
+
+**Response fields:**
+- `base_url` — The API endpoint being used
+- `has_api_key` — Whether an API key is configured
+- `status` — Connection status (`ok`, `error`, `connection_refused`, `timeout`)
+- `http_code` — HTTP status code (if connection succeeded)
+- `error` — Error message (if any)
+- `fix` — Suggested resolution (for known issues)
+
+## Best practices
+
+1. **Check connection first** — Use `check_connection` to diagnose setup issues before running audits
+2. **Monitor credits** — Call `get_credits` periodically to avoid unexpected `402` errors
+3. **Handle rate limits gracefully** — Implement retry logic with exponential backoff for `429` errors
+4. **Validate API keys** — Test with a free tool first, then verify paid tools work
+5. **Parse error responses** — All errors return structured JSON with `error` and `status_code` fields
+
+## Debugging
+
+To debug issues:
+
+1. Run `check_connection` to verify basic connectivity
+2. Check the `status_code` field to identify the error type:
+   - `401`/`403` → Authentication issue
+   - `429` → Rate limiting
+   - `402` → Out of credits
+   - `400` → Invalid request
+   - `404` → Resource not found
+   - `500` → Server error
+3. Review the `error` message for specific details
+4. Verify environment variables are set correctly
+5. Ensure you're using the latest version of `stobo-mcp`
+
+For persistent issues, check the [troubleshooting guide](/advanced/troubleshooting) or contact Stobo support.

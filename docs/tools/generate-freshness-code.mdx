@@ -1,0 +1,171 @@
+---
+title: generate_freshness_code
+description: Create date markup code snippet so AI knows your content is up to date
+---
+
+Generate ready-to-use date markup code that tells AI assistants when your content was published and last updated.
+
+## Overview
+
+`generate_freshness_code` creates date markup:
+
+- **Multiple formats** — HTML meta tags and JSON-LD schema
+- **Current timestamps** — uses current date or your specified dates
+- **Copy-paste ready** — code you can add directly to your pages
+- **Spec-compliant** — follows schema.org Article standards
+
+<Note>
+This tool is completely free and works without an API key.
+</Note>
+
+## Parameters
+
+<ParamField path="url" type="string" required>
+  The page URL you want to add date markup to. Used for context and to extract any existing dates.
+</ParamField>
+
+## Example prompts
+
+```
+Generate date markup for this page
+```
+
+```
+Add freshness signals to my blog post
+```
+
+```
+Create date markup for https://example.com/blog/article
+```
+
+## Response structure
+
+The tool returns a JSON object with:
+
+<ResponseField name="html_meta_tags" type="string">
+  HTML meta tags for Open Graph article dates
+</ResponseField>
+
+<ResponseField name="json_ld" type="string">
+  JSON-LD schema markup for Article dates
+</ResponseField>
+
+<ResponseField name="published_date" type="string">
+  ISO 8601 formatted publish date
+</ResponseField>
+
+<ResponseField name="modified_date" type="string">
+  ISO 8601 formatted last modified date
+</ResponseField>
+
+<ResponseField name="placement_instructions" type="string">
+  Where to place each code snippet in your HTML
+</ResponseField>
+
+## Usage example
+
+```python
+# How the tool is called in the MCP server
+@mcp.tool(annotations=READ_ONLY)
+def generate_freshness_code(url: str) -> str:
+    """Create date markup so AI knows your content is up to date."""
+    client = _get_client()
+    return _call(client.generate_freshness_code, url)
+```
+
+## Generated code formats
+
+### HTML meta tags
+
+```html
+<!-- Add these to your <head> section -->
+<meta property="article:published_time" content="2024-02-28T10:00:00Z" />
+<meta property="article:modified_time" content="2024-02-28T14:30:00Z" />
+```
+
+### JSON-LD schema
+
+```html
+<!-- Add this to your <head> section or before </body> -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "datePublished": "2024-02-28T10:00:00Z",
+  "dateModified": "2024-02-28T14:30:00Z",
+  "headline": "Your Article Title",
+  "author": {
+    "@type": "Person",
+    "name": "Author Name"
+  }
+}
+</script>
+```
+
+## When to use
+
+Use `generate_freshness_code` when:
+
+- **audit_article shows freshness check fails** — page is missing date markup
+- **audit_freshness identifies missing pages** — fix each URL in bulk
+- **Publishing new content** — add dates from the start
+- **Updating old content** — signal freshness to AI assistants
+
+<Tip>
+Add date markup to all blog posts and articles. AI assistants prioritize content with clear publication and update dates.
+</Tip>
+
+## Implementation
+
+<Steps>
+  <Step title="Generate the code">
+    Run the tool with your page URL
+  </Step>
+  
+  <Step title="Copy HTML meta tags">
+    Add the `html_meta_tags` to your page's `<head>` section
+  </Step>
+  
+  <Step title="Copy JSON-LD schema">
+    Add the `json_ld` to your page's `<head>` or before `</body>`
+  </Step>
+  
+  <Step title="Update dates when editing">
+    Change `dateModified` whenever you significantly update the content
+  </Step>
+  
+  <Step title="Verify implementation">
+    Use [audit_article](/tools/audit-article) to confirm freshness check passes
+  </Step>
+</Steps>
+
+## Date format
+
+All dates use ISO 8601 format with UTC timezone:
+
+```
+2024-02-28T10:00:00Z
+```
+
+- `2024-02-28` — date (YYYY-MM-DD)
+- `T` — separator
+- `10:00:00` — time (HH:MM:SS)
+- `Z` — UTC timezone indicator
+
+<Note>
+Always use UTC timezone (Z suffix) for consistency. AI assistants will convert to local timezones when displaying.
+</Note>
+
+## Content management integration
+
+If using a CMS, automate date markup:
+
+- **WordPress** — add to theme's `header.php` using `get_the_date()` and `get_the_modified_date()`
+- **Next.js** — add to page metadata using frontmatter dates
+- **Gatsby** — use GraphQL to inject dates into helmet/SEO component
+- **Static sites** — add dates manually to each page's frontmatter
+
+## Next steps
+
+- [audit_article](/tools/audit-article) — verify freshness check passes
+- [audit_freshness](/tools/audit-freshness) — scan all blog posts for missing dates

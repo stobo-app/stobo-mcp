@@ -1,0 +1,317 @@
+---
+title: Pricing and credits
+description: Credit costs for Stobo MCP tools and how to manage your usage
+---
+
+Stobo MCP uses a credit-based pricing model. Most tools are free — you only pay for AI-powered generation and optimization features.
+
+## Credit costs
+
+<CardGroup cols={2}>
+  <Card title="Free tools" icon="circle-check" color="#10b981">
+    No API key or credits required:
+    
+    - `audit_site`
+    - `audit_article`
+    - `audit_freshness`
+    - `generate_robots_txt`
+    - `generate_sitemap`
+    - `generate_freshness_code`
+    - `check_connection`
+  </Card>
+  
+  <Card title="Paid tools" icon="coins" color="#f59e0b">
+    Requires API key and credits:
+    
+    - `generate_llms_txt` — 500 credits
+    - `extract_tone` — 500 credits
+    - `rewrite_article` — 1,000 credits
+    - `get_credits` — Free, but requires API key
+  </Card>
+</CardGroup>
+
+---
+
+## Tool pricing breakdown
+
+| Tool | Cost | What you get |
+|------|------|-------------|
+| `audit_site` | **Free** | Full 30 SEO + 7 AEO audit, blog detection, sitemap discovery. Results cached 24h. |
+| `audit_article` | **Free** | Article-level audit: 7 SEO + 14 AEO checks. Optionally target a keyword. |
+| `audit_freshness` | **Free** | Scan up to 50 sitemap URLs for missing date markup. |
+| `generate_robots_txt` | **Free** | AI-friendly robots.txt with GPTBot, ClaudeBot, PerplexityBot allowed. |
+| `generate_sitemap` | **Free** | Crawl up to 200 pages and generate a spec-compliant sitemap.xml. |
+| `generate_freshness_code` | **Free** | JSON-LD snippet with publish and update dates. |
+| `generate_llms_txt` | **500 credits** | Spec-compliant llms.txt file based on your site structure. |
+| `extract_tone` | **500 credits** | Analyze up to 10 blog posts and create a brand voice profile. |
+| `rewrite_article` | **1,000 credits** | Full audit + tone-matched rewrite optimized for SEO and AI visibility. |
+| `get_credits` | **Free** | Check your plan, usage, and remaining balance. Requires API key. |
+| `check_connection` | **Free** | Verify the Stobo API is reachable. No API key needed. |
+
+---
+
+## How credits work
+
+<Steps>
+  <Step title="Sign up for a Stobo account">
+    Go to [trystobo.com](https://trystobo.com) and create an account. You'll start with a free tier that includes credits for testing.
+  </Step>
+  
+  <Step title="Generate an API key">
+    Navigate to **Settings > API Keys** and create a new key. Add it to your MCP server config:
+    
+    ```json
+    {
+      "mcpServers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"],
+          "env": {
+            "STOBO_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+  </Step>
+  
+  <Step title="Use paid tools">
+    Once your API key is configured, you can use paid tools like `generate_llms_txt`, `extract_tone`, and `rewrite_article`.
+    
+    Credits are deducted automatically when you run a paid tool.
+  </Step>
+  
+  <Step title="Check your balance">
+    Ask your AI assistant:
+    
+    ```
+    How many credits do I have left?
+    ```
+    
+    This runs `get_credits` and shows:
+    - Current plan tier
+    - Credits used this billing period
+    - Remaining credits
+    - Breakdown by tool
+  </Step>
+  
+  <Step title="Top up when needed">
+    If you run out of credits, log in to [trystobo.com](https://trystobo.com) and purchase more. Free tools continue to work even with zero credits.
+  </Step>
+</Steps>
+
+---
+
+## Free vs paid tools
+
+### Why are audits free?
+
+Audits (`audit_site`, `audit_article`, `audit_freshness`) are **free** because they're read-only analysis. They don't generate new content or require AI inference — just structured data extraction and scoring.
+
+They also serve as discovery tools. Once you see what's failing, you can decide whether to fix issues manually or use paid generators.
+
+### Why do generators cost credits?
+
+Tools like `generate_llms_txt`, `extract_tone`, and `rewrite_article` use AI models to analyze your content and generate production-ready output. These operations:
+
+- Require server-side inference (GPT-4, Claude, etc.)
+- Fetch and parse multiple pages
+- Run computationally expensive analysis (readability scoring, tone extraction, etc.)
+- Return high-quality, deployment-ready content
+
+### What's free to use without an API key?
+
+You can use these tools **without any account or API key**:
+
+- `audit_site`
+- `audit_article`
+- `audit_freshness`
+- `generate_robots_txt`
+- `generate_sitemap`
+- `generate_freshness_code`
+- `check_connection`
+
+This lets you audit any website and generate basic fix files (robots.txt, sitemap.xml, date markup) for free.
+
+---
+
+## Caching and cost savings
+
+<Note>
+  Audit results are **cached for 24 hours**. If you run the same audit twice within 24 hours, the second call is instant and doesn't count against rate limits.
+</Note>
+
+### How caching works
+
+- `audit_site` results are cached by URL (normalized)
+- `audit_article` results are cached by URL + keyword (if provided)
+- `audit_freshness` results are cached by sitemap URL + limit
+
+### Example: Using cache to save time
+
+```
+You: Audit https://example.com
+AI: [Runs audit, returns score: 75%]
+
+You: Share that audit with my team
+AI: [Re-runs audit, uses cache, returns instantly]
+
+You: What was the performance score again?
+AI: [Re-runs audit, uses cache, returns instantly]
+```
+
+All three requests hit the cache after the first run.
+
+### Cache expiration
+
+Caches expire after 24 hours. After that, the next audit will re-fetch and re-score your site.
+
+Use this to:
+- Track daily improvements after deploying fixes
+- Compare before/after scores without burning credits
+
+---
+
+## Rate limits
+
+<Tip>
+  Stobo MCP has generous rate limits designed for conversational use. Normal usage stays well within limits.
+</Tip>
+
+### What triggers rate limits?
+
+- Running the same tool repeatedly in quick succession (e.g., 10 audits in 10 seconds)
+- Batch operations on large sitemaps (e.g., `audit_freshness` with `limit=1000`)
+
+### What happens if you hit a rate limit?
+
+You'll see an error:
+
+```json
+{
+  "error": "Rate limit reached. Please wait a moment and try again.",
+  "status_code": 429
+}
+```
+
+Just wait a few seconds and retry. Rate limits reset quickly.
+
+### How to avoid rate limits
+
+- Use caching — don't re-run the same audit unnecessarily
+- Batch requests when possible (e.g., "Audit these 3 URLs" instead of 3 separate prompts)
+- Use `limit` parameters to control batch size (e.g., `audit_freshness` with `limit=50` instead of `limit=500`)
+
+---
+
+## Cost comparison: Stobo MCP vs manual
+
+### Without Stobo MCP
+
+Auditing a website manually with `web_fetch` requires:
+
+- **6 web fetches** (homepage, robots.txt, sitemap.xml, llms.txt, 2 blog posts)
+- **~71,000 tokens** of raw HTML pasted into context
+- **Manual parsing** of meta tags, headers, and structured data
+- **No server-side metrics** (Core Web Vitals, TTFB, readability scores)
+
+### With Stobo MCP
+
+- **1 tool call** (`audit_site`)
+- **~20,000 tokens** of structured JSON
+- **Automatic parsing** with 30 SEO + 7 AEO checks
+- **Server-side metrics** included (Playwright-based Core Web Vitals, TTFB, Flesch-Kincaid scores)
+
+### Full workflow comparison
+
+| Task | Manual (web_fetch) | Stobo MCP | Savings |
+|------|-------------------|-----------|--------|
+| Site audit | 71,000 tokens / 6 fetches | 20,000 tokens / 1 call | **72% fewer tokens** |
+| Freshness audit | 60,000 tokens / 20 fetches | 3,000 tokens / 1 call | **95% fewer tokens** |
+| llms.txt generation | 35,000 tokens / 6 fetches | 3,000 tokens / 1 call | **91% fewer tokens** |
+| Tone extraction | 35,000 tokens / 10 fetches | 5,000 tokens / 1 call | **86% fewer tokens** |
+| **Total** | **201,000 tokens / 42 fetches** | **31,000 tokens / 4 calls** | **85% fewer tokens** |
+
+That's **170,000 tokens saved** for a full optimization workflow.
+
+---
+
+## Usage tips
+
+<AccordionGroup>
+  <Accordion title="Start with free tools">
+    Before spending credits:
+    
+    1. Run `audit_site` to see what's failing
+    2. Fix issues manually (robots.txt, sitemap.xml, date markup)
+    3. Use paid tools only for complex tasks (llms.txt, tone extraction, rewrites)
+    
+    This way you only pay for AI-generated content, not basic fixes.
+  </Accordion>
+  
+  <Accordion title="Use extract_tone once per brand">
+    You only need to run `extract_tone` **once** per website or brand. The tone profile is stored and reused for all future `rewrite_article` calls.
+    
+    If your writing style changes, re-run `extract_tone` to update the profile.
+  </Accordion>
+  
+  <Accordion title="Batch rewrites for efficiency">
+    If you're rewriting multiple articles:
+    
+    1. Run `extract_tone` once (500 credits)
+    2. Run `rewrite_article` for each post (1,000 credits each)
+    
+    The tone profile is shared across all rewrites, so you only pay the 500-credit extraction cost once.
+  </Accordion>
+  
+  <Accordion title="Monitor usage with get_credits">
+    Run `get_credits` periodically to see:
+    - Which tools you use most
+    - How many credits you have left
+    - When your billing period resets
+    
+    This helps you budget credits and avoid surprise overages.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Getting more credits
+
+<Steps>
+  <Step title="Log in to Stobo">
+    Go to [trystobo.com](https://trystobo.com) and sign in.
+  </Step>
+  
+  <Step title="Navigate to billing">
+    Click **Settings > Billing** to see your current plan and usage.
+  </Step>
+  
+  <Step title="Purchase credits or upgrade">
+    Choose a plan tier or buy a credit pack. Credits are added to your account instantly.
+  </Step>
+  
+  <Step title="Continue using paid tools">
+    No need to restart your editor or update your config. Your API key will automatically have access to the new credits.
+  </Step>
+</Steps>
+
+---
+
+## What happens if you run out of credits?
+
+If you hit zero credits:
+
+- **Free tools continue to work** (audits, robots.txt, sitemap, freshness code)
+- **Paid tools return an error**:
+  
+  ```json
+  {
+    "error": "You've run out of credits. Top up at https://trystobo.com to continue using premium tools.",
+    "status_code": 402
+  }
+  ```
+  
+- **Your AI assistant will notify you** and suggest topping up
+
+Top up at [trystobo.com](https://trystobo.com) to resume using paid tools.

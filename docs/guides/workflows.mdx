@@ -1,0 +1,323 @@
+---
+title: Common workflows
+description: Step-by-step guides for the most common Stobo MCP usage patterns
+---
+
+Stobo MCP tools work best when combined. These workflows show you how to chain tools together to audit, fix, and optimize your website in a single conversation.
+
+## Audit → Fix
+
+The most common workflow: audit your website, then fix every failing check.
+
+<Steps>
+  <Step title="Run a full site audit">
+    Ask your AI assistant:
+    
+    ```
+    Audit https://example.com
+    ```
+    
+    This runs `audit_site` — a full 30 SEO + 7 AEO check audit. You'll get:
+    - Combined SEO + AEO score
+    - Breakdown by category (Content, Links, Technical, Performance, etc.)
+    - Pass/fail status for each AEO check
+    - Blog detection and sitemap discovery
+    - Top 3-5 recommendations
+    
+    Results are cached for 24 hours, so re-running the same audit is instant.
+  </Step>
+  
+  <Step title="Review failing checks">
+    Look for red flags in the AEO checklist:
+    - `llms_txt` — Missing or incomplete llms.txt file
+    - `robots_ai` — AI crawlers are blocked in robots.txt
+    - `sitemap` — No sitemap.xml found
+    - `freshness` — Missing date markup on blog posts
+    
+    Each failing check has a corresponding fix generator.
+  </Step>
+  
+  <Step title="Fix llms.txt (if failing)">
+    If your llms.txt check failed, ask:
+    
+    ```
+    Generate an llms.txt for https://example.com
+    ```
+    
+    This runs `generate_llms_txt` and returns a ready-to-deploy file. Copy the content and save it to `/llms.txt` in your site root.
+    
+    <Note>This tool costs 500 credits and requires an API key.</Note>
+  </Step>
+  
+  <Step title="Fix robots.txt (if AI crawlers are blocked)">
+    If the audit shows AI bots are blocked, ask:
+    
+    ```
+    Generate a robots.txt that allows AI crawlers
+    ```
+    
+    This runs `generate_robots_txt` and creates a robots.txt that welcomes GPTBot, ClaudeBot, PerplexityBot, and other AI crawlers while still respecting your existing rules.
+    
+    <Tip>This tool is free and instant.</Tip>
+  </Step>
+  
+  <Step title="Fix sitemap (if missing)">
+    If your sitemap check failed, ask:
+    
+    ```
+    Generate a sitemap for https://example.com
+    ```
+    
+    This runs `generate_sitemap`, crawls up to 200 pages, and creates a spec-compliant sitemap.xml. Deploy it to `/sitemap.xml`.
+    
+    <Tip>This tool is free. You can adjust the crawl limit with the `max_urls` parameter.</Tip>
+  </Step>
+  
+  <Step title="Fix freshness (if missing date markup)">
+    If your freshness check failed, ask:
+    
+    ```
+    Generate date markup for https://example.com/blog/my-post
+    ```
+    
+    This runs `generate_freshness_code` and returns a code snippet with publish and update dates. Add it to your page's `<head>` or structured data.
+    
+    <Tip>This tool is free and generates JSON-LD markup that AI assistants look for.</Tip>
+  </Step>
+  
+  <Step title="Re-run the audit">
+    After deploying your fixes, re-run the audit to verify:
+    
+    ```
+    Audit https://example.com
+    ```
+    
+    Your score should improve, and previously failing checks should now pass.
+  </Step>
+</Steps>
+
+---
+
+## Blog optimization
+
+Optimize a specific blog post for SEO and AI visibility while keeping your brand voice.
+
+<Steps>
+  <Step title="Audit the article">
+    Start with an article-level audit:
+    
+    ```
+    Audit https://example.com/blog/guide
+    ```
+    
+    This runs `audit_article` with 7 SEO and 14 AEO checks tailored for blog content. You'll see:
+    - Keyword density and placement
+    - Readability scores (Flesch-Kincaid)
+    - FAQ detection and schema markup
+    - Content structure analysis
+    - Direct answer optimization
+    
+    Optionally, target a specific keyword:
+    
+    ```bash
+    Audit https://example.com/blog/guide targeting "content marketing"
+    ```
+  </Step>
+  
+  <Step title="Extract your brand voice">
+    Before rewriting, build a tone profile so the rewrite matches your style:
+    
+    ```
+    Extract my brand voice from https://example.com/blog
+    ```
+    
+    This runs `extract_tone` and analyzes up to 10 of your most recent blog posts. It identifies:
+    - Tone patterns (conversational, formal, technical, etc.)
+    - Vocabulary preferences
+    - Sentence structure
+    - Common phrases and writing tics
+    
+    <Note>This tool costs 500 credits. It analyzes your blog index page and follows links to individual posts.</Note>
+  </Step>
+  
+  <Step title="Rewrite the article">
+    Now that you have a tone profile, ask for a rewrite:
+    
+    ```
+    Rewrite https://example.com/blog/guide for better AI visibility
+    ```
+    
+    This runs `rewrite_article`, which:
+    1. Audits the article again (to get current state)
+    2. Applies your tone profile
+    3. Rewrites the content with SEO and AEO improvements
+    4. Returns a before/after comparison
+    
+    The rewrite improves keyword placement, readability, FAQ structure, and direct answer optimization — all while keeping your voice.
+    
+    <Note>This tool costs 1,000 credits. It's the most expensive operation because it includes auditing, tone matching, and content generation.</Note>
+  </Step>
+  
+  <Step title="Review and deploy">
+    The AI will show you the rewritten article. Review the changes, make any manual edits, and deploy to your site.
+    
+    <Tip>You can ask follow-up questions like "Make it more technical" or "Add a section about X" to refine the output.</Tip>
+  </Step>
+</Steps>
+
+---
+
+## Content freshness sweep
+
+Find and fix missing date markup across your entire blog.
+
+<Steps>
+  <Step title="Run a freshness audit">
+    Scan your blog for missing date signals:
+    
+    ```
+    Check freshness across my blog at https://example.com/sitemap.xml
+    ```
+    
+    This runs `audit_freshness`, which:
+    - Parses your sitemap
+    - Checks each page for date markup (JSON-LD, meta tags, schema.org)
+    - Reports which pages are missing freshness signals
+    
+    You'll get a list of URLs sorted by priority (newest first, or by traffic if available).
+    
+    <Tip>This tool is free and scans up to 50 pages by default. Increase with `limit=100`.</Tip>
+  </Step>
+  
+  <Step title="Generate date markup for each page">
+    For every URL missing dates, ask:
+    
+    ```
+    Generate date markup for https://example.com/blog/old-post
+    ```
+    
+    This runs `generate_freshness_code` and returns a JSON-LD snippet like:
+    
+    ```json
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "datePublished": "2024-01-15",
+      "dateModified": "2024-02-20"
+    }
+    ```
+    
+    <Tip>You can batch this: "Generate date markup for [url1], [url2], [url3]" — the AI will run multiple `generate_freshness_code` calls in parallel.</Tip>
+  </Step>
+  
+  <Step title="Add markup to your pages">
+    For each page, add the JSON-LD snippet to your `<head>` tag or merge it with existing structured data.
+    
+    If you're using a CMS (WordPress, Ghost, etc.), look for a structured data plugin or custom code block.
+  </Step>
+  
+  <Step title="Verify the fix">
+    Re-run the freshness audit to confirm:
+    
+    ```
+    Check freshness across my blog at https://example.com/sitemap.xml
+    ```
+    
+    Previously flagged pages should now pass.
+  </Step>
+</Steps>
+
+---
+
+## Quick wins for first-time users
+
+If you're new to Stobo MCP, start here:
+
+<CardGroup cols={2}>
+  <Card title="Audit your homepage" icon="magnifying-glass">
+    ```
+    Audit https://yoursite.com
+    ```
+    
+    See your combined SEO + AEO score in seconds.
+  </Card>
+  
+  <Card title="Fix your llms.txt" icon="file-code">
+    ```
+    Generate an llms.txt for https://yoursite.com
+    ```
+    
+    Most sites are missing this — it's an easy 10-point AEO boost.
+  </Card>
+  
+  <Card title="Check your blog freshness" icon="calendar">
+    ```
+    Check freshness across my blog
+    ```
+    
+    Find which posts need date markup.
+  </Card>
+  
+  <Card title="See your credit balance" icon="coins">
+    ```
+    How many credits do I have left?
+    ```
+    
+    Runs `get_credits` to show your usage and balance.
+  </Card>
+</CardGroup>
+
+---
+
+## Pro tips
+
+<AccordionGroup>
+  <Accordion title="Run multiple fixes in parallel">
+    Instead of:
+    
+    ```
+    Generate an llms.txt
+    Generate a robots.txt
+    Generate a sitemap
+    ```
+    
+    Ask:
+    
+    ```
+    Generate an llms.txt, robots.txt, and sitemap for https://example.com
+    ```
+    
+    The AI will run all three tools in parallel, saving time.
+  </Accordion>
+  
+  <Accordion title="Use caching to save credits">
+    Audit results are cached for 24 hours. If you run the same `audit_site` or `audit_article` call twice, the second one is free and instant.
+    
+    Use this to:
+    - Share audit results with teammates (just re-run the audit)
+    - Compare before/after scores without re-spending credits
+  </Accordion>
+  
+  <Accordion title="Target keywords in article audits">
+    If you're optimizing for a specific keyword, include it in the audit:
+    
+    ```
+    Audit https://example.com/blog/guide targeting "SEO tools"
+    ```
+    
+    The audit will check keyword density, placement in headings, and usage in meta tags.
+  </Accordion>
+  
+  <Accordion title="Combine workflows for full optimization">
+    For a complete optimization pass:
+    
+    1. Run `audit_site` to get your baseline score
+    2. Fix all AEO checks (llms.txt, robots.txt, sitemap, freshness)
+    3. Run `audit_freshness` to find content gaps
+    4. Run `extract_tone` to build your voice profile
+    5. Run `rewrite_article` on your top-performing posts
+    6. Re-run `audit_site` to measure improvement
+    
+    You can do all of this in a single conversation.
+  </Accordion>
+</AccordionGroup>

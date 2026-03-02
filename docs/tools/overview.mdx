@@ -1,0 +1,107 @@
+---
+title: Tools overview
+description: Complete reference of all 11 Stobo MCP tools for SEO and AEO optimization
+---
+
+Stobo MCP provides 11 tools to audit, fix, and optimize your website for search engines and AI assistants. Most tools are free and work without an API key.
+
+## All tools
+
+<CardGroup cols={2}>
+  <Card title="audit_site" icon="chart-mixed" href="/tools/audit-site">
+    Full website SEO + AEO audit with 30 SEO + 7 AEO checks
+  </Card>
+  <Card title="audit_article" icon="file-magnifying-glass" href="/tools/audit-article">
+    Deep-dive article audit with keyword targeting
+  </Card>
+  <Card title="audit_freshness" icon="calendar-check" href="/tools/audit-freshness">
+    Check date markup across blog posts
+  </Card>
+  <Card title="generate_llms_txt" icon="file-lines" href="/tools/generate-llms-txt">
+    Create llms.txt for AI discoverability
+  </Card>
+  <Card title="generate_robots_txt" icon="robot" href="/tools/generate-robots-txt">
+    Create AI-friendly robots.txt
+  </Card>
+  <Card title="generate_sitemap" icon="sitemap" href="/tools/generate-sitemap">
+    Create sitemap.xml by crawling
+  </Card>
+  <Card title="generate_freshness_code" icon="code" href="/tools/generate-freshness-code">
+    Create date markup snippet
+  </Card>
+  <Card title="extract_tone" icon="message-pen" href="/tools/extract-tone">
+    Analyze brand writing style
+  </Card>
+  <Card title="rewrite_article" icon="pen-to-square" href="/tools/rewrite-article">
+    Rewrite for better SEO/AEO
+  </Card>
+  <Card title="get_credits" icon="coins" href="/tools/get-credits">
+    Check credit balance
+  </Card>
+  <Card title="check_connection" icon="wifi" href="/tools/check-connection">
+    Verify API connectivity
+  </Card>
+</CardGroup>
+
+## Tools by category
+
+### Audits
+
+These tools analyze your website and content for SEO and AI visibility issues.
+
+| Tool | Description | Free? |
+|------|-------------|-------|
+| [audit_site](/tools/audit-site) | Full website audit: 30 SEO + 7 AEO checks | Yes |
+| [audit_article](/tools/audit-article) | Article-level audit: 7 SEO + 14 AEO checks | Yes |
+| [audit_freshness](/tools/audit-freshness) | Check date markup across blog posts | Yes |
+
+### Fix generators
+
+These tools generate ready-to-deploy files that fix issues found in audits.
+
+| Tool | Description | Free? |
+|------|-------------|-------|
+| [generate_llms_txt](/tools/generate-llms-txt) | Create llms.txt for AI discoverability | No (500 credits) |
+| [generate_robots_txt](/tools/generate-robots-txt) | Create AI-friendly robots.txt | Yes |
+| [generate_sitemap](/tools/generate-sitemap) | Create sitemap.xml by crawling | Yes |
+| [generate_freshness_code](/tools/generate-freshness-code) | Create date markup snippet | Yes |
+
+### Content optimization
+
+These tools help optimize your content for better SEO and AI visibility.
+
+| Tool | Description | Free? |
+|------|-------------|-------|
+| [extract_tone](/tools/extract-tone) | Analyze brand writing style from blog posts | No (500 credits) |
+| [rewrite_article](/tools/rewrite-article) | Rewrite article for better SEO/AEO | No (1,000 credits) |
+
+### Utilities
+
+These tools help manage your account and troubleshoot issues.
+
+| Tool | Description | Free? |
+|------|-------------|-------|
+| [get_credits](/tools/get-credits) | Check credit balance and usage | Requires API key |
+| [check_connection](/tools/check-connection) | Verify API connectivity | Yes |
+
+## Tool conventions
+
+### Authentication
+
+- **Free tools** work without an API key or account
+- **Paid tools** require an API key from [trystobo.com](https://trystobo.com)
+- **Account tools** require an API key but don't consume credits
+
+### Return format
+
+All tools return JSON responses with structured data. Success responses include the requested data, while error responses include an `error` field with details.
+
+### Caching
+
+- `audit_site` results are cached for 24 hours
+- Other audits are not cached and always run fresh
+- Generators always create new content
+
+<Note>
+Free tools (audits and most generators) work without an API key. You can start using Stobo MCP immediately without creating an account.
+</Note>

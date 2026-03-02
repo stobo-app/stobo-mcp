@@ -1,0 +1,143 @@
+---
+title: Environment variables
+description: Configuration options for the Stobo MCP server
+---
+
+Configure Stobo MCP behavior using environment variables in your MCP server configuration.
+
+## Available variables
+
+<ParamField path="STOBO_API_KEY" type="string" required={false}>
+  Your API key from [trystobo.com](https://trystobo.com)
+
+  **Default:** _(empty)_
+
+  Free tools work without an API key. Only required for paid tools:
+  - `generate_llms_txt` (500 credits)
+  - `extract_tone` (500 credits)
+  - `rewrite_article` (1,000 credits)
+  - `get_credits` (requires key, but free)
+
+  To obtain an API key:
+  1. Sign up at [trystobo.com](https://trystobo.com)
+  2. Navigate to **Settings > API Keys**
+  3. Create a new key
+  4. Add it to your MCP config's `env` section
+
+  <Note>
+    The API key is passed to the Stobo client and validated on each paid tool call. Invalid or expired keys return an `AuthError` with status code `401` or `403`.
+  </Note>
+</ParamField>
+
+<ParamField path="STOBO_BASE_URL" type="string" required={false}>
+  API endpoint for Stobo services
+
+  **Default:** `https://api.trystobo.com`
+
+  <Warning>
+    Only change this if instructed by Stobo support. The default value points to the production API and works for all standard use cases.
+  </Warning>
+
+  Used internally by the MCP server when initializing the `StoboClient`:
+
+  ```python
+  def _get_client() -> StoboClient:
+      api_key = os.environ.get("STOBO_API_KEY", "")
+      base_url = os.environ.get("STOBO_BASE_URL", "https://api.trystobo.com")
+      return StoboClient(
+          base_url=base_url,
+          api_key=api_key,
+          user_agent="stobo-mcp/0.4.2",
+          source="mcp"
+      )
+  ```
+
+  The `check_connection` tool verifies connectivity to this URL by hitting the `/api/v1/health` endpoint.
+</ParamField>
+
+## Configuration examples
+
+### Claude Desktop (with API key)
+
+```json
+{
+  "mcpServers": {
+    "stobo": {
+      "command": "uvx",
+      "args": ["--native-tls", "stobo-mcp"],
+      "env": {
+        "STOBO_API_KEY": "sk_live_abc123..."
+      }
+    }
+  }
+}
+```
+
+### Claude Desktop (free tools only)
+
+```json
+{
+  "mcpServers": {
+    "stobo": {
+      "command": "uvx",
+      "args": ["--native-tls", "stobo-mcp"]
+    }
+  }
+}
+```
+
+Remove the `env` block entirely to use free tools without an account.
+
+### VS Code (with custom base URL)
+
+```json
+{
+  "servers": {
+    "stobo": {
+      "command": "uvx",
+      "args": ["--native-tls", "stobo-mcp"],
+      "env": {
+        "STOBO_API_KEY": "sk_live_abc123...",
+        "STOBO_BASE_URL": "https://api-staging.trystobo.com"
+      }
+    }
+  }
+}
+```
+
+### Claude Code (CLI)
+
+Export environment variables in your shell:
+
+```bash
+export STOBO_API_KEY="sk_live_abc123..."
+export STOBO_BASE_URL="https://api.trystobo.com"  # optional
+```
+
+Then add the server:
+
+```bash
+claude mcp add stobo -- uvx --native-tls stobo-mcp
+```
+
+## Verification
+
+To verify your configuration is correct:
+
+1. Restart your editor after updating the config
+2. Ask your AI assistant to run `check_connection`
+3. The response will show:
+   - Current `base_url` being used
+   - Whether an API key is configured (`has_api_key: true/false`)
+   - Connection status and any errors
+
+Example response:
+
+```json
+{
+  "base_url": "https://api.trystobo.com",
+  "has_api_key": true,
+  "status": "ok",
+  "http_code": 200
+}
+```

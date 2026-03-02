@@ -1,0 +1,221 @@
+---
+title: rewrite_article
+description: Rewrite an article to improve SEO and AI visibility while keeping your brand voice
+---
+
+Rewrite an existing article to improve its SEO and AI visibility while maintaining your brand voice.
+
+## Overview
+
+`rewrite_article` performs complete article optimization:
+
+- **Audits first** — runs full analysis to identify issues
+- **Brand voice preservation** — uses your tone profile from [extract_tone](/tools/extract-tone)
+- **SEO optimization** — fixes title, headings, keyword usage, internal links
+- **AEO optimization** — adds FAQ sections, lists, tables, better structure
+- **Complete rewrite** — returns fully optimized article ready to publish
+
+<Warning>
+This tool requires an API key and costs 1,000 credits per rewrite.
+</Warning>
+
+## Parameters
+
+<ParamField path="url" type="string" required>
+  The article URL to rewrite. Should be a specific blog post or article page.
+</ParamField>
+
+<ParamField path="customer_id" type="string" optional>
+  Customer identifier to find your tone profile. If omitted, uses your API key to find the most recent profile.
+</ParamField>
+
+## Example prompts
+
+```
+Rewrite this article for better AI visibility
+```
+
+```
+Optimize https://example.com/blog/guide
+```
+
+```
+Rewrite this article using my brand voice
+```
+
+## Response structure
+
+The tool returns a JSON object with:
+
+<ResponseField name="original" type="object">
+  Original article audit results and content
+  <Expandable title="properties">
+    <ResponseField name="title" type="string">
+      Original title
+    </ResponseField>
+    <ResponseField name="content" type="string">
+      Original article content
+    </ResponseField>
+    <ResponseField name="seo_score" type="number">
+      Original SEO score
+    </ResponseField>
+    <ResponseField name="aeo_score" type="number">
+      Original AEO score
+    </ResponseField>
+    <ResponseField name="failing_checks" type="array">
+      List of checks that failed
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="rewritten" type="object">
+  Optimized article content
+  <Expandable title="properties">
+    <ResponseField name="title" type="string">
+      Optimized title
+    </ResponseField>
+    <ResponseField name="content" type="string">
+      Complete rewritten article (HTML/Markdown)
+    </ResponseField>
+    <ResponseField name="changes_made" type="array">
+      List of optimizations applied
+    </ResponseField>
+    <ResponseField name="estimated_seo_score" type="number">
+      Projected SEO score after changes
+    </ResponseField>
+    <ResponseField name="estimated_aeo_score" type="number">
+      Projected AEO score after changes
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="tone_profile_used" type="string">
+  Which tone profile was applied
+</ResponseField>
+
+## Usage example
+
+```python
+# How the tool is called in the MCP server
+@mcp.tool(annotations=WRITE)
+def rewrite_article(
+    url: str,
+    customer_id: str | None = None,
+) -> str:
+    """Rewrite an existing article to improve its SEO and AI visibility."""
+    client = _get_client()
+    return _call(client.optimize, url, customer_id=customer_id, sync=True)
+```
+
+## What gets optimized
+
+The rewrite improves:
+
+### SEO optimizations
+
+- **Title tag** — includes target keyword, under 60 characters
+- **Meta description** — compelling summary, under 160 characters
+- **Heading structure** — proper H1/H2/H3 hierarchy
+- **Content depth** — adds detail where needed (target 1500+ words)
+- **Readability** — improves Flesch-Kincaid score
+- **Internal links** — adds relevant internal links
+- **Image optimization** — suggests better alt text
+
+### AEO optimizations
+
+- **FAQ section** — adds common questions and answers
+- **List formatting** — converts prose to scannable lists
+- **Table of contents** — adds navigation for long articles
+- **Direct answers** — adds concise answer boxes
+- **Examples** — includes real-world use cases
+- **Code blocks** — properly formatted code (if technical content)
+- **Key takeaways** — summary section for quick scanning
+
+### Brand voice preservation
+
+- Maintains your tone (formal, casual, technical, friendly)
+- Uses your vocabulary level and word choices
+- Follows your sentence structure patterns
+- Applies your formatting preferences
+- Keeps your stylistic choices (humor, metaphors, etc.)
+
+## Prerequisites
+
+Before using `rewrite_article`, you should:
+
+1. **Extract your tone profile** using [extract_tone](/tools/extract-tone)
+2. **Audit the article** using [audit_article](/tools/audit-article) (optional, but helpful to see before/after)
+
+<Note>
+If you haven't run `extract_tone`, the rewrite will use a generic professional tone. Always extract your tone first for best results.
+</Note>
+
+## When to use
+
+Use `rewrite_article` for:
+
+- **Low-performing content** — articles with poor SEO/AEO scores
+- **Outdated articles** — refresh old content for current best practices
+- **Thin content** — expand shallow articles with more depth
+- **Unstructured content** — improve scanability and structure
+- **Competitor analysis** — match or exceed competitor article quality
+
+<Tip>
+Focus on your top 10-20 most important articles first. Optimizing key articles has more impact than rewriting everything.
+</Tip>
+
+## Workflow
+
+<Steps>
+  <Step title="Extract brand voice">
+    Run [extract_tone](/tools/extract-tone) on your blog (500 credits, one-time)
+  </Step>
+  
+  <Step title="Audit the article">
+    Run [audit_article](/tools/audit-article) to see current scores and issues (free)
+  </Step>
+  
+  <Step title="Rewrite the article">
+    Run `rewrite_article` to get optimized version (1,000 credits)
+  </Step>
+  
+  <Step title="Review the changes">
+    Compare original vs rewritten in the response
+  </Step>
+  
+  <Step title="Publish the update">
+    Copy the `rewritten.content` and publish to your site
+  </Step>
+  
+  <Step title="Verify improvement">
+    Run [audit_article](/tools/audit-article) again to confirm better scores
+  </Step>
+</Steps>
+
+## Cost
+
+Rewriting an article costs **1,000 credits**. This includes:
+
+- Full article audit (SEO + AEO)
+- AI-powered content rewriting
+- Brand voice application
+- SEO and AEO optimizations
+- Before/after comparison
+
+<Note>
+This is more expensive than other tools because it involves AI content generation, not just analysis.
+</Note>
+
+## Content ownership
+
+You own all rewritten content:
+
+- No attribution required
+- Use commercially without restrictions
+- Edit further as needed
+- Publish anywhere
+
+## Next steps
+
+- [audit_article](/tools/audit-article) — verify improvements after publishing
+- [extract_tone](/tools/extract-tone) — update your voice profile periodically

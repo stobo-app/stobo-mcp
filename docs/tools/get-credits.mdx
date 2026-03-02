@@ -1,0 +1,182 @@
+---
+title: get_credits
+description: Check your credit balance, usage, and plan details
+---
+
+Check how many credits you have left, view usage history, and see your plan details.
+
+## Overview
+
+`get_credits` shows your account status:
+
+- **Current balance** — credits remaining
+- **Usage breakdown** — credits consumed by tool
+- **Plan information** — your subscription tier
+- **Usage history** — recent credit transactions
+
+<Note>
+This tool requires an API key but does not consume credits.
+</Note>
+
+## Parameters
+
+This tool takes no parameters.
+
+## Example prompts
+
+```
+How many credits do I have left?
+```
+
+```
+Check my balance
+```
+
+```
+Show my credit usage
+```
+
+## Response structure
+
+The tool returns a JSON object with:
+
+<ResponseField name="balance" type="number">
+  Current credit balance
+</ResponseField>
+
+<ResponseField name="plan" type="string">
+  Your subscription plan (Free, Starter, Pro, Enterprise)
+</ResponseField>
+
+<ResponseField name="monthly_credits" type="number">
+  Total credits allocated per month for your plan
+</ResponseField>
+
+<ResponseField name="credits_used_this_month" type="number">
+  Credits consumed in the current billing period
+</ResponseField>
+
+<ResponseField name="credits_remaining_this_month" type="number">
+  Credits left before next reset
+</ResponseField>
+
+<ResponseField name="reset_date" type="string">
+  When your monthly credits reset
+</ResponseField>
+
+<ResponseField name="usage_by_tool" type="object">
+  Breakdown of credit usage by tool
+  <Expandable title="properties">
+    <ResponseField name="generate_llms_txt" type="number">
+      Credits used for llms.txt generation
+    </ResponseField>
+    <ResponseField name="extract_tone" type="number">
+      Credits used for tone extraction
+    </ResponseField>
+    <ResponseField name="rewrite_article" type="number">
+      Credits used for article rewrites
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="recent_transactions" type="array">
+  Last 10 credit transactions with timestamp, tool, and amount
+</ResponseField>
+
+## Usage example
+
+```python
+# How the tool is called in the MCP server
+@mcp.tool(annotations=READ_ONLY)
+def get_credits() -> str:
+    """Check how many credits you have left."""
+    client = _get_client()
+    return _call(client.get_credits)
+```
+
+## Credit costs reference
+
+| Tool | Cost |
+|------|------|
+| generate_llms_txt | 500 credits |
+| extract_tone | 500 credits |
+| rewrite_article | 1,000 credits |
+| All other tools | Free (0 credits) |
+
+## Plans
+
+Stobo offers several subscription tiers:
+
+- **Free** — 0 credits/month, free tools only
+- **Starter** — 10,000 credits/month
+- **Pro** — 50,000 credits/month
+- **Enterprise** — Custom credit allocation
+
+See [pricing guide](/guides/pricing) for details.
+
+## When to use
+
+Use `get_credits` to:
+
+- **Check before expensive operations** — verify you have enough credits before running rewrite_article
+- **Monitor usage** — track which tools consume most credits
+- **Budget planning** — understand your usage patterns
+- **Troubleshooting** — verify account status if operations fail
+
+<Tip>
+Run this before starting a large batch of operations to ensure you have sufficient credits.
+</Tip>
+
+## Credit management
+
+### Monthly reset
+
+Credits reset on your billing date each month:
+
+- Unused credits expire (don't roll over)
+- New allocation becomes available immediately
+- Usage counters reset to zero
+
+### Running out of credits
+
+If you exhaust your monthly credits:
+
+- Free tools continue working
+- Paid tools return 402 Payment Required error
+- Purchase additional credits at [trystobo.com](https://trystobo.com)
+- Or wait for monthly reset
+
+<Warning>
+Paid tools (generate_llms_txt, extract_tone, rewrite_article) will fail if you have insufficient credits. Check your balance first.
+</Warning>
+
+## Example response
+
+```json
+{
+  "balance": 8500,
+  "plan": "Pro",
+  "monthly_credits": 50000,
+  "credits_used_this_month": 41500,
+  "credits_remaining_this_month": 8500,
+  "reset_date": "2024-03-15",
+  "usage_by_tool": {
+    "generate_llms_txt": 15000,
+    "extract_tone": 5000,
+    "rewrite_article": 21500
+  },
+  "recent_transactions": [
+    {
+      "timestamp": "2024-02-28T10:30:00Z",
+      "tool": "rewrite_article",
+      "amount": -1000,
+      "balance_after": 8500
+    }
+  ]
+}
+```
+
+## Next steps
+
+- [View pricing plans](/guides/pricing) — upgrade for more credits
+- Visit [trystobo.com](https://trystobo.com) to manage your account

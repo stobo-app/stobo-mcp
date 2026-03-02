@@ -1,0 +1,213 @@
+---
+title: check_connection
+description: Verify the Stobo API is reachable and your configuration is correct
+---
+
+Check if the Stobo API is reachable and diagnose connection issues.
+
+## Overview
+
+`check_connection` performs connectivity diagnostics:
+
+- **API reachability** — verifies Stobo API server is responding
+- **Configuration check** — validates your base URL and API key presence
+- **Network diagnostics** — identifies connection issues
+- **Health status** — confirms API is operational
+
+<Note>
+This tool is completely free and works without an API key.
+</Note>
+
+## Parameters
+
+This tool takes no parameters.
+
+## Example prompts
+
+```
+Check if Stobo is working
+```
+
+```
+Test the connection
+```
+
+```
+Verify API connectivity
+```
+
+## Response structure
+
+The tool returns a JSON object with:
+
+<ResponseField name="status" type="string">
+  Connection status: "ok", "error", "timeout", or "connection_refused"
+</ResponseField>
+
+<ResponseField name="base_url" type="string">
+  The API base URL being used (from STOBO_BASE_URL env var)
+</ResponseField>
+
+<ResponseField name="has_api_key" type="boolean">
+  Whether an API key is configured (doesn't validate it, just checks presence)
+</ResponseField>
+
+<ResponseField name="http_code" type="number">
+  HTTP status code from health endpoint (200 = success)
+</ResponseField>
+
+<ResponseField name="error" type="string">
+  Error message if connection failed
+</ResponseField>
+
+<ResponseField name="fix" type="string">
+  Suggested fix for the issue (if applicable)
+</ResponseField>
+
+## Usage example
+
+```python
+# How the tool is called in the MCP server
+@mcp.tool(annotations=READ_ONLY)
+def check_connection() -> str:
+    """Check if the Stobo API is reachable."""
+    import httpx
+
+    base_url = os.environ.get("STOBO_BASE_URL", "https://api.trystobo.com")
+    api_key = os.environ.get("STOBO_API_KEY", "")
+    result = {
+        "base_url": base_url,
+        "has_api_key": bool(api_key),
+    }
+
+    try:
+        resp = httpx.get(f"{base_url}/api/v1/health", timeout=10)
+        result["status"] = "ok" if resp.status_code == 200 else "error"
+        result["http_code"] = resp.status_code
+    except httpx.ConnectError as e:
+        result["status"] = "connection_refused"
+        result["error"] = str(e)
+        result["fix"] = "The API server is unreachable. Check your network or try again later."
+    except httpx.TimeoutException:
+        result["status"] = "timeout"
+        result["error"] = "Request timed out after 10 seconds"
+        result["fix"] = "The API server is slow or unreachable. Check your network."
+    except Exception as e:
+        result["status"] = "error"
+        result["error"] = str(e)
+
+    return json.dumps(result, indent=2)
+```
+
+## Status codes
+
+| Status | Meaning | Action |
+|--------|---------|--------|
+| `ok` | API is reachable and responding | No action needed |
+| `error` | API returned non-200 status | Check API status or try again |
+| `timeout` | Request took too long (>10s) | Check network or retry |
+| `connection_refused` | Cannot reach API server | Check internet, firewall, or API status |
+
+## When to use
+
+Use `check_connection` when:
+
+- **Tools are failing unexpectedly** — verify it's not a connectivity issue
+- **First-time setup** — confirm configuration is correct
+- **After changing STOBO_BASE_URL** — verify custom endpoint works
+- **Network issues suspected** — isolate whether problem is local or API-side
+
+<Tip>
+Run this first if any tool is returning connection errors. It's faster than debugging individual tool failures.
+</Tip>
+
+## Common issues and fixes
+
+<Accordion title="status: connection_refused">
+  The API server is not reachable.
+  
+  **Possible causes:**
+  - No internet connection
+  - Firewall blocking outbound HTTPS
+  - VPN or proxy interfering
+  - API server is down (rare)
+  
+  **Fixes:**
+  - Check your internet connection
+  - Try from a different network
+  - Disable VPN temporarily
+  - Check [Stobo status page](https://trystobo.com/status)
+</Accordion>
+
+<Accordion title="status: timeout">
+  The API is slow to respond or unreachable.
+  
+  **Possible causes:**
+  - Slow network connection
+  - API server is overloaded (rare)
+  - DNS issues
+  
+  **Fixes:**
+  - Try again in a few seconds
+  - Check your network speed
+  - Try from a different network
+</Accordion>
+
+<Accordion title="status: error, http_code: 404">
+  The health endpoint doesn't exist.
+  
+  **Possible causes:**
+  - Wrong STOBO_BASE_URL configured
+  - Typo in base URL
+  
+  **Fixes:**
+  - Remove STOBO_BASE_URL env var (use default)
+  - If using custom URL, verify it's correct
+</Accordion>
+
+<Accordion title="status: ok, has_api_key: false">
+  Connection works but no API key configured.
+  
+  **Impact:**
+  - Free tools work fine
+  - Paid tools will fail with auth errors
+  
+  **Fix:**
+  - If using paid tools, add STOBO_API_KEY to your MCP config
+  - If only using free tools, no action needed
+</Accordion>
+
+## Configuration check
+
+The tool reports your current configuration:
+
+```json
+{
+  "status": "ok",
+  "base_url": "https://api.trystobo.com",
+  "has_api_key": true,
+  "http_code": 200
+}
+```
+
+This confirms:
+
+- Using default API endpoint (recommended)
+- API key is configured
+- API server is healthy
+
+<Warning>
+If `base_url` is not `https://api.trystobo.com`, you might have STOBO_BASE_URL misconfigured. Remove it unless you were specifically told to set it.
+</Warning>
+
+## Next steps
+
+If connection check passes:
+
+- Proceed with using other tools normally
+- If tools still fail, the issue is likely API key or credits
+
+If connection check fails:
+
+- See [troubleshooting guide](/advanced/troubleshooting)
+- Check [environment variables](/advanced/environment-variables)

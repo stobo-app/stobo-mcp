@@ -1,0 +1,162 @@
+---
+title: audit_article
+description: Deep-dive article audit with 7 SEO and 14 AEO checks, with optional keyword targeting
+---
+
+Analyze a single blog post or article for SEO and AI readability. Use this for specific article URLs, not homepages.
+
+## Overview
+
+`audit_article` provides article-level analysis:
+
+- **7 SEO checks** — title, description, headings, content quality, readability, images, internal links
+- **14 AEO checks** — AI-specific optimizations for better visibility
+- **Keyword targeting** — optional keyword to evaluate optimization for
+- **Playwright rendering** — optional JavaScript rendering for dynamic content
+
+<Note>
+This tool is completely free and works without an API key.
+</Note>
+
+## Parameters
+
+<ParamField path="url" type="string" required>
+  The article URL to audit. Should be a specific blog post or article page, not a homepage or listing page.
+</ParamField>
+
+<ParamField path="keyword" type="string" optional>
+  Target keyword to evaluate optimization for. If provided, checks will assess how well the article is optimized for this keyword.
+</ParamField>
+
+<ParamField path="use_playwright" type="boolean" optional default="false">
+  Whether to use Playwright for JavaScript rendering. Enable this for single-page applications or JavaScript-heavy sites.
+</ParamField>
+
+## Example prompts
+
+```
+Audit https://example.com/blog/my-post
+```
+
+```
+Check this article targeting 'content marketing'
+```
+
+```
+Audit https://example.com/blog/guide with keyword SEO optimization
+```
+
+## Response structure
+
+The tool returns a JSON object with:
+
+<ResponseField name="seo" type="object">
+  SEO check results (7 checks)
+  <Expandable title="checks">
+    <ResponseField name="title" type="object">
+      Title tag optimization
+    </ResponseField>
+    <ResponseField name="description" type="object">
+      Meta description check
+    </ResponseField>
+    <ResponseField name="headings" type="object">
+      Heading structure (H1, H2, H3)
+    </ResponseField>
+    <ResponseField name="content_quality" type="object">
+      Word count and depth
+    </ResponseField>
+    <ResponseField name="readability" type="object">
+      Flesch-Kincaid score
+    </ResponseField>
+    <ResponseField name="images" type="object">
+      Image optimization and alt text
+    </ResponseField>
+    <ResponseField name="internal_links" type="object">
+      Internal linking structure
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="aeo" type="object">
+  AEO check results (14 checks)
+  <Expandable title="checks">
+    <ResponseField name="freshness" type="object">
+      Date markup presence
+    </ResponseField>
+    <ResponseField name="direct_answer" type="object">
+      Concise answer format
+    </ResponseField>
+    <ResponseField name="faqs" type="object">
+      FAQ content
+    </ResponseField>
+    <ResponseField name="lists" type="object">
+      List formatting
+    </ResponseField>
+    <ResponseField name="tables" type="object">
+      Table usage
+    </ResponseField>
+    <ResponseField name="code_blocks" type="object">
+      Code examples
+    </ResponseField>
+    <ResponseField name="quotes" type="object">
+      Blockquotes and citations
+    </ResponseField>
+    <ResponseField name="toc" type="object">
+      Table of contents
+    </ResponseField>
+    <ResponseField name="key_takeaways" type="object">
+      Summary/takeaways section
+    </ResponseField>
+    <ResponseField name="examples" type="object">
+      Real-world examples
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="keyword_optimization" type="object">
+  Keyword optimization analysis (if keyword provided)
+</ResponseField>
+
+## Usage example
+
+```python
+# How the tool is called in the MCP server
+@mcp.tool(annotations=READ_ONLY)
+def audit_article(
+    url: str,
+    keyword: str | None = None,
+    use_playwright: bool = False,
+) -> str:
+    """Analyze a single blog post or article for SEO and AI readability."""
+    client = _get_client()
+    return _call(client.audit_article, url, keyword=keyword, use_playwright=use_playwright)
+```
+
+## When to use
+
+Use `audit_article` for:
+
+- **Specific blog posts** — URLs containing /blog/, /post/, /article/
+- **Content optimization** — before rewriting or improving an article
+- **Keyword targeting** — evaluate optimization for a specific search term
+- **Content audits** — systematically review all blog content
+
+<Warning>
+Do not use `audit_article` for homepages or domain-level audits. Use [audit_site](/tools/audit-site) instead.
+</Warning>
+
+## Routing rule
+
+The MCP server instructions specify this routing:
+
+- "audit my site" / any domain / homepage → `audit_site`
+- "audit this article" / specific blog post URL → `audit_article`
+- When in doubt, use `audit_site`
+
+## Next steps
+
+After running `audit_article`, you can:
+
+- [extract_tone](/tools/extract-tone) — analyze your brand voice from blog posts
+- [rewrite_article](/tools/rewrite-article) — rewrite the article for better SEO/AEO
+- [generate_freshness_code](/tools/generate-freshness-code) — add date markup if missing

@@ -1,0 +1,158 @@
+---
+title: generate_sitemap
+description: Create a sitemap.xml by crawling your website's pages
+---
+
+Crawl your website and generate a properly formatted sitemap.xml file for search engines and AI assistants.
+
+## Overview
+
+`generate_sitemap` creates a complete sitemap:
+
+- **Automated crawling** — discovers pages by following links
+- **Configurable depth** — scan up to 200 URLs
+- **Spec-compliant XML** — follows sitemap.xml standards
+- **Priority and frequency hints** — helps search engines understand your site
+- **Ready to deploy** — returns XML you can paste into /sitemap.xml
+
+<Note>
+This tool is completely free and works without an API key.
+</Note>
+
+## Parameters
+
+<ParamField path="url" type="string" required>
+  Your website URL (domain or full URL). The crawler starts here and follows internal links.
+</ParamField>
+
+<ParamField path="max_urls" type="number" optional default="200">
+  Maximum number of URLs to include in the sitemap. Set lower for faster generation or higher for comprehensive coverage.
+</ParamField>
+
+## Example prompts
+
+```
+Generate a sitemap for my site
+```
+
+```
+My sitemap is missing — create one
+```
+
+```
+Create a sitemap.xml for https://example.com
+```
+
+## Response structure
+
+The tool returns a JSON object with:
+
+<ResponseField name="xml" type="string">
+  The complete sitemap.xml content, ready to deploy at /sitemap.xml
+</ResponseField>
+
+<ResponseField name="url_count" type="number">
+  Number of URLs included in the sitemap
+</ResponseField>
+
+<ResponseField name="pages_by_type" type="object">
+  Breakdown of URLs by content type (homepage, blog posts, pages, etc.)
+</ResponseField>
+
+<ResponseField name="crawl_date" type="string">
+  When the crawl was performed
+</ResponseField>
+
+## Usage example
+
+```python
+# How the tool is called in the MCP server
+@mcp.tool(annotations=READ_ONLY)
+def generate_sitemap(url: str, max_urls: int = 200) -> str:
+    """Create a sitemap.xml by crawling your website's pages."""
+    client = _get_client()
+    return _call(client.generate_sitemap, url, max_urls=max_urls)
+```
+
+## Generated sitemap format
+
+Example sitemap.xml output:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://example.com/</loc>
+    <lastmod>2024-02-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://example.com/blog/article-1</loc>
+    <lastmod>2024-02-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <!-- more URLs... -->
+</urlset>
+```
+
+## When to use
+
+Use `generate_sitemap` when:
+
+- **audit_site shows sitemap is missing** — most common trigger
+- **New site launch** — ensure discoverability from day one
+- **Major site restructure** — regenerate after adding/removing pages
+- **Dynamic content added** — update when adding new sections
+
+<Tip>
+Run this regularly (monthly) to keep your sitemap up-to-date as you add new content.
+</Tip>
+
+## Deployment
+
+After generating the sitemap:
+
+1. Copy the `xml` from the response
+2. Save it as `sitemap.xml` at your domain root
+3. Deploy to `https://yourdomain.com/sitemap.xml`
+4. Verify it's accessible publicly
+5. Add to your robots.txt:
+   ```
+   Sitemap: https://yourdomain.com/sitemap.xml
+   ```
+6. Submit to Google Search Console
+
+<Note>
+The sitemap must be at your domain root (/sitemap.xml) or referenced in robots.txt.
+</Note>
+
+## Crawling behavior
+
+The crawler:
+
+- Starts at the provided URL
+- Follows all internal links (same domain)
+- Respects robots.txt rules
+- Stops at `max_urls` limit
+- Excludes common non-content paths (admin, login, search)
+- Prioritizes important pages (homepage, main sections)
+
+<Warning>
+The crawler only finds pages linked from other pages. Orphan pages (not linked anywhere) won't be included.
+</Warning>
+
+## Sitemap best practices
+
+- **Update regularly** — regenerate monthly or after major content changes
+- **Keep it focused** — only include important, indexable pages
+- **Add to robots.txt** — reference your sitemap location
+- **Submit to search engines** — Google Search Console, Bing Webmaster Tools
+- **Monitor coverage** — check search console for indexing issues
+
+## Next steps
+
+- [audit_site](/tools/audit-site) — verify sitemap check passes
+- [generate_robots_txt](/tools/generate-robots-txt) — add sitemap reference to robots.txt
+- [audit_freshness](/tools/audit-freshness) — use sitemap to check date markup

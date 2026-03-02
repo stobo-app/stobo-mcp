@@ -1,0 +1,179 @@
+---
+title: extract_tone
+description: Analyze your brand's writing style from blog posts to create a voice profile
+---
+
+Analyze your brand's writing style from existing blog posts and create a detailed voice profile.
+
+## Overview
+
+`extract_tone` builds a brand voice profile:
+
+- **Automated analysis** — reads up to 10 blog posts to understand your style
+- **Voice characteristics** — identifies tone, vocabulary, sentence structure, and patterns
+- **Reusable profile** — stores profile for use in [rewrite_article](/tools/rewrite-article)
+- **Comprehensive report** — detailed breakdown of your writing style
+
+<Warning>
+This tool requires an API key and costs 500 credits per extraction.
+</Warning>
+
+## Parameters
+
+<ParamField path="blog_url" type="string" required>
+  URL of your blog or blog listing page. The tool will crawl to find individual posts.
+</ParamField>
+
+<ParamField path="customer_id" type="string" optional>
+  Customer identifier for profile storage. If omitted, uses your API key.
+</ParamField>
+
+<ParamField path="max_articles" type="number" optional default="10">
+  Maximum number of articles to analyze (1-10). More articles = more accurate profile.
+</ParamField>
+
+## Example prompts
+
+```
+Extract the brand voice from https://example.com/blog
+```
+
+```
+What's my writing style?
+```
+
+```
+Analyze my brand tone from my blog posts
+```
+
+## Response structure
+
+The tool returns a JSON object with:
+
+<ResponseField name="tone_profile" type="object">
+  Complete voice profile
+  <Expandable title="properties">
+    <ResponseField name="tone" type="string">
+      Overall tone (professional, casual, friendly, technical, etc.)
+    </ResponseField>
+    <ResponseField name="vocabulary_level" type="string">
+      Reading level (simple, intermediate, advanced, expert)
+    </ResponseField>
+    <ResponseField name="sentence_structure" type="string">
+      Typical sentence patterns (short and punchy, varied, complex, etc.)
+    </ResponseField>
+    <ResponseField name="common_phrases" type="array">
+      Frequently used phrases and expressions
+    </ResponseField>
+    <ResponseField name="writing_patterns" type="array">
+      Structural patterns (uses lists, includes examples, cites sources, etc.)
+    </ResponseField>
+    <ResponseField name="formatting_preferences" type="object">
+      Formatting choices (heading usage, list types, emphasis styles)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="articles_analyzed" type="number">
+  Number of articles actually analyzed
+</ResponseField>
+
+<ResponseField name="profile_id" type="string">
+  Unique identifier for this tone profile (for use in rewrite_article)
+</ResponseField>
+
+<ResponseField name="created_at" type="string">
+  When the profile was created
+</ResponseField>
+
+## Usage example
+
+```python
+# How the tool is called in the MCP server
+@mcp.tool(annotations=WRITE)
+def extract_tone(
+    blog_url: str,
+    customer_id: str | None = None,
+    max_articles: int = 10,
+) -> str:
+    """Analyze your brand's writing style from blog posts."""
+    client = _get_client()
+    return _call(
+        client.extract_tone, blog_url, customer_id=customer_id, max_articles=max_articles
+    )
+```
+
+## What gets analyzed
+
+The tool examines:
+
+- **Tone and voice** — formal vs casual, serious vs playful, authoritative vs conversational
+- **Vocabulary** — word choice, jargon usage, reading level
+- **Sentence structure** — length, complexity, variety
+- **Paragraph patterns** — typical paragraph length and flow
+- **Content structure** — how you organize information
+- **Stylistic choices** — use of questions, examples, metaphors, humor
+- **Formatting habits** — heading hierarchy, list types, emphasis
+
+## When to use
+
+Use `extract_tone` when:
+
+- **Before using rewrite_article** — establish your voice first
+- **New content team members** — codify your brand voice for consistency
+- **Rebranding** — document your target voice
+- **Content audits** — understand current voice across all content
+
+<Tip>
+Run this once and reuse the profile for all article rewrites. You only pay 500 credits once, then use the profile unlimited times.
+</Tip>
+
+## Analysis quality
+
+Better profiles come from:
+
+- **More articles** — 10 articles gives most accurate results
+- **Recent content** — reflects current brand voice
+- **Consistent authors** — single voice is easier to profile
+- **Long-form content** — blog posts with 1000+ words
+
+<Warning>
+Avoid analyzing:
+- Press releases (too formal)
+- Product descriptions (too promotional)
+- Mixed author content (inconsistent voice)
+- Very short posts (not enough signal)
+</Warning>
+
+## Profile storage
+
+Your tone profile is stored and reusable:
+
+- Profiles are tied to your API key (or custom `customer_id`)
+- Multiple profiles supported (for different brands/products)
+- Profiles don't expire
+- Update by running `extract_tone` again (creates new profile)
+
+## Using the profile
+
+After extraction, use the profile in [rewrite_article](/tools/rewrite-article):
+
+```
+Rewrite this article using my brand voice
+```
+
+The rewrite tool automatically finds your most recent tone profile and applies it.
+
+## Cost
+
+Extracting a tone profile costs **500 credits**. This includes:
+
+- Crawling and reading up to 10 blog posts
+- Natural language analysis of writing patterns
+- Profile generation and storage
+- Unlimited future use in rewrites
+
+## Next steps
+
+- [rewrite_article](/tools/rewrite-article) — use your tone profile to rewrite content
+- [audit_article](/tools/audit-article) — identify articles that need improvement
