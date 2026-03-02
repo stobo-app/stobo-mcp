@@ -1,0 +1,358 @@
+---
+title: Installation
+description: Install and configure Stobo MCP for your AI editor
+---
+
+# Installation
+
+Stobo MCP is distributed as a Python package and runs via `uvx` for zero-config installation. No OAuth, no complex setup — just add the config and go.
+
+## Prerequisites
+
+Before installing Stobo MCP, ensure you have:
+
+<Steps>
+  <Step title="MCP-compatible AI client">
+    You need an AI editor that supports the Model Context Protocol:
+    
+    - Claude Desktop
+    - Claude Code (CLI)
+    - Cursor
+    - VS Code (with Copilot)
+    - Windsurf
+    - Any other MCP-compatible client
+  </Step>
+  
+  <Step title="uv package manager">
+    Install `uv` to use the `uvx` runtime:
+    
+    <CodeGroup>
+    ```bash pip
+    pip install uv
+    ```
+    
+    ```bash Homebrew
+    brew install uv
+    ```
+    
+    ```bash curl (Linux/macOS)
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    ```
+    </CodeGroup>
+    
+    Verify installation:
+    
+    ```bash
+    uvx --version
+    ```
+  </Step>
+  
+  <Step title="Stobo API key (optional)">
+    Only needed for premium tools like `generate_llms_txt`, `extract_tone`, and `rewrite_article`.
+    
+    Free tools (`audit_site`, `audit_article`, fix generators) work without an API key.
+    
+    Get your key at [trystobo.com](https://trystobo.com):
+    
+    1. Sign up or log in
+    2. Go to **Settings > API Keys**
+    3. Create a new key and copy it
+  </Step>
+</Steps>
+
+## Install the package
+
+Stobo MCP is installed automatically when you configure your AI editor. No manual `pip install` needed — `uvx` handles everything.
+
+<Note>
+  The package is pulled from PyPI as `stobo-mcp`. Version 0.4.3 is the latest stable release.
+</Note>
+
+If you want to install it manually for testing:
+
+<CodeGroup>
+```bash pip
+pip install stobo-mcp
+```
+
+```bash uv
+uv pip install stobo-mcp
+```
+
+```bash uvx
+uvx stobo-mcp
+```
+</CodeGroup>
+
+## Configure your AI editor
+
+Add Stobo MCP to your editor's MCP server configuration. Choose your editor below:
+
+<Steps>
+  <Step title="Claude Desktop">
+    Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+    
+    <CodeGroup>
+    ```json With API key
+    {
+      "mcpServers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"],
+          "env": {
+            "STOBO_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+    
+    ```json Without API key (free tools only)
+    {
+      "mcpServers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"]
+        }
+      }
+    }
+    ```
+    </CodeGroup>
+    
+    <Tip>
+      Restart Claude Desktop after saving the config file.
+    </Tip>
+  </Step>
+  
+  <Step title="Claude Code (CLI)">
+    Add the server via the CLI:
+    
+    ```bash
+    claude mcp add stobo -- uvx --native-tls stobo-mcp
+    ```
+    
+    If using premium tools, export your API key in your shell:
+    
+    ```bash
+    export STOBO_API_KEY="your-api-key"
+    ```
+    
+    Add to `~/.bashrc`, `~/.zshrc`, or your shell config to persist across sessions.
+  </Step>
+  
+  <Step title="Cursor">
+    Open **Settings > MCP Servers > Add Server**, then paste:
+    
+    <CodeGroup>
+    ```json With API key
+    {
+      "stobo": {
+        "command": "uvx",
+        "args": ["--native-tls", "stobo-mcp"],
+        "env": {
+          "STOBO_API_KEY": "your-api-key"
+        }
+      }
+    }
+    ```
+    
+    ```json Without API key (free tools only)
+    {
+      "stobo": {
+        "command": "uvx",
+        "args": ["--native-tls", "stobo-mcp"]
+      }
+    }
+    ```
+    </CodeGroup>
+    
+    <Tip>
+      Restart Cursor after saving the configuration.
+    </Tip>
+  </Step>
+  
+  <Step title="VS Code (Copilot)">
+    Add to `.vscode/mcp.json` in your project root:
+    
+    <CodeGroup>
+    ```json With API key
+    {
+      "servers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"],
+          "env": {
+            "STOBO_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+    
+    ```json Without API key (free tools only)
+    {
+      "servers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"]
+        }
+      }
+    }
+    ```
+    </CodeGroup>
+    
+    <Tip>
+      Reload VS Code after creating the config file.
+    </Tip>
+  </Step>
+  
+  <Step title="Windsurf">
+    Add to `~/.codeium/windsurf/mcp_config.json`:
+    
+    <CodeGroup>
+    ```json With API key
+    {
+      "mcpServers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"],
+          "env": {
+            "STOBO_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+    
+    ```json Without API key (free tools only)
+    {
+      "mcpServers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"]
+        }
+      }
+    }
+    ```
+    </CodeGroup>
+    
+    <Tip>
+      Restart Windsurf after saving the configuration.
+    </Tip>
+  </Step>
+</Steps>
+
+## Environment variables
+
+Stobo MCP uses two environment variables:
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `STOBO_API_KEY` | No | _(empty)_ | Your API key from trystobo.com. Free tools work without it. |
+| `STOBO_BASE_URL` | No | `https://api.trystobo.com` | API endpoint. Only change this if told to by Stobo support. |
+
+<Warning>
+  Do not change `STOBO_BASE_URL` unless instructed by Stobo support. The default endpoint is correct for all users.
+</Warning>
+
+## Verify installation
+
+Test that Stobo MCP is working correctly:
+
+<Steps>
+  <Step title="Manual test">
+    Run the server manually to verify it starts without errors:
+    
+    ```bash
+    uvx --native-tls stobo-mcp
+    ```
+    
+    You should see the MCP server start. Press `Ctrl+C` to stop.
+  </Step>
+  
+  <Step title="Test in your AI editor">
+    Open your AI editor and ask:
+    
+    ```
+    "Check if Stobo is working"
+    ```
+    
+    The AI should use the `check_connection` tool and confirm the API is reachable.
+  </Step>
+  
+  <Step title="Run a free audit">
+    Test with a real audit (no API key needed):
+    
+    ```
+    "Audit https://example.com"
+    ```
+    
+    You should get a full SEO + AEO audit report with scores and recommendations.
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+### Tool not showing up in your editor
+
+<Steps>
+  <Step title="Save and restart">
+    Ensure you saved the config file and **restarted** your editor completely.
+  </Step>
+  
+  <Step title="Verify uvx installation">
+    Run `uvx --version` in your terminal to confirm `uv` is installed correctly.
+  </Step>
+  
+  <Step title="Test manually">
+    Run `uvx --native-tls stobo-mcp` — it should start without errors. If it fails, check your `uv` installation.
+  </Step>
+  
+  <Step title="Check config syntax">
+    Validate your JSON config file. Even a missing comma can break MCP server loading.
+  </Step>
+</Steps>
+
+### "No API key configured"
+
+Free tools work without a key. If you're calling a premium tool:
+
+<Steps>
+  <Step title="Get an API key">
+    Sign up at [trystobo.com](https://trystobo.com) and go to **Settings > API Keys**.
+  </Step>
+  
+  <Step title="Add to config">
+    Add `STOBO_API_KEY` to the `env` block in your editor config.
+  </Step>
+  
+  <Step title="Restart your editor">
+    Environment variables are loaded when the MCP server starts. Restart to pick up the new key.
+  </Step>
+</Steps>
+
+### "Your API key is invalid or expired"
+
+Log in at [trystobo.com](https://trystobo.com), generate a new key, and update your config file.
+
+### "You've run out of credits"
+
+Top up at [trystobo.com](https://trystobo.com). Free tools still work without credits.
+
+### "Rate limit reached"
+
+Wait a moment and try again. Rate limits reset quickly. Normal conversational use stays well within limits.
+
+### Connection issues
+
+Ask your AI assistant to run `check_connection`. Common fixes:
+
+- Check your internet connection
+- Make sure `STOBO_BASE_URL` is not set (it defaults to the correct value)
+- Try again in a few minutes if the API is temporarily down
+
+## Next steps
+
+<Card title="Quick start" icon="rocket" href="/quickstart">
+  Run your first audit and generate fixes in minutes
+</Card>

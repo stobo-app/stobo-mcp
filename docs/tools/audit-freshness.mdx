@@ -1,0 +1,138 @@
+---
+title: audit_freshness
+description: Check how many blog posts have proper date markup that AI assistants look for
+---
+
+Scan your sitemap and report which pages are missing freshness signals (date markup) that AI assistants need.
+
+## Overview
+
+`audit_freshness` analyzes your blog posts for date markup:
+
+- **Sitemap scanning** — reads your sitemap.xml to find all pages
+- **Date markup detection** — checks for datePublished and dateModified schema
+- **Batch processing** — scans up to 50 URLs by default
+- **Missing page report** — identifies which posts lack freshness signals
+
+<Note>
+This tool is completely free and works without an API key.
+</Note>
+
+## Parameters
+
+<ParamField path="sitemap_url" type="string" required>
+  URL of your sitemap.xml file. Can be the full sitemap URL or just your domain (will try common sitemap locations).
+</ParamField>
+
+<ParamField path="limit" type="number" optional default="50">
+  Maximum number of URLs to scan from the sitemap. Set higher for larger blogs (up to 200).
+</ParamField>
+
+## Example prompts
+
+```
+Check freshness across my blog
+```
+
+```
+Which posts are missing date markup?
+```
+
+```
+Audit freshness at https://example.com/sitemap.xml
+```
+
+## Response structure
+
+The tool returns a JSON object with:
+
+<ResponseField name="total_urls" type="number">
+  Total number of URLs scanned from sitemap
+</ResponseField>
+
+<ResponseField name="with_freshness" type="number">
+  Number of URLs with proper date markup
+</ResponseField>
+
+<ResponseField name="without_freshness" type="number">
+  Number of URLs missing date markup
+</ResponseField>
+
+<ResponseField name="percentage" type="number">
+  Percentage of URLs with freshness signals (0-100%)
+</ResponseField>
+
+<ResponseField name="missing_urls" type="array">
+  List of URLs missing date markup (for fixing)
+</ResponseField>
+
+<ResponseField name="scan_date" type="string">
+  When the scan was performed
+</ResponseField>
+
+## Usage example
+
+```python
+# How the tool is called in the MCP server
+@mcp.tool(annotations=READ_ONLY)
+def audit_freshness(sitemap_url: str, limit: int = 50) -> str:
+    """Check how many of your blog posts have proper date markup."""
+    client = _get_client()
+    return _call(client.freshness_audit, sitemap_url, limit=limit)
+```
+
+## What is freshness?
+
+Freshness signals tell AI assistants when content was published and last updated. This helps them:
+
+- Prioritize recent content in answers
+- Understand if information might be outdated
+- Cite publication dates in responses
+- Track content updates over time
+
+### Required markup
+
+AI assistants look for these schema.org properties:
+
+```html
+<meta property="article:published_time" content="2024-01-15T10:00:00Z" />
+<meta property="article:modified_time" content="2024-02-20T14:30:00Z" />
+```
+
+Or in JSON-LD format:
+
+```json
+{
+  "@type": "Article",
+  "datePublished": "2024-01-15T10:00:00Z",
+  "dateModified": "2024-02-20T14:30:00Z"
+}
+```
+
+## When to use
+
+Use `audit_freshness` for:
+
+- **Blog audits** — check all posts at once for missing date markup
+- **Content freshness campaigns** — identify which posts need updates
+- **New blog setup** — verify date markup is implemented correctly
+- **Regular monitoring** — track freshness signal adoption over time
+
+<Tip>
+Run this after setting up your blog to ensure all posts have proper date markup from the start.
+</Tip>
+
+## Fixing missing freshness
+
+For each URL missing date markup, use [generate_freshness_code](/tools/generate-freshness-code) to create the markup snippet:
+
+```
+Generate date markup for https://example.com/blog/post
+```
+
+This returns ready-to-deploy HTML/JSON-LD code you can add to your post.
+
+## Next steps
+
+- [generate_freshness_code](/tools/generate-freshness-code) — create date markup for missing pages
+- [audit_article](/tools/audit-article) — deep-dive specific articles

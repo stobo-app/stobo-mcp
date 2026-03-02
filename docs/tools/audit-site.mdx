@@ -1,0 +1,167 @@
+---
+title: audit_site
+description: Full website SEO and AEO audit with 30 SEO checks and 7 AEO checks
+---
+
+Analyze a website's SEO performance and AI visibility. This is the main audit tool — use it for any website or homepage.
+
+## Overview
+
+`audit_site` runs a comprehensive analysis of your website:
+
+- **30 SEO checks** across 7 categories (380 points total)
+- **7 AEO checks** for AI discoverability
+- **Blog detection** — automatically finds your blog
+- **Sitemap discovery** — maps your site structure
+- **Combined score** — single metric showing overall health
+- **Cached results** — same URL returns cached results for 24 hours
+
+<Note>
+This tool is completely free and works without an API key.
+</Note>
+
+## Parameters
+
+<ParamField path="url" type="string" required>
+  The website URL to audit. Can be a domain (phantombuster.com) or full URL (https://example.com).
+</ParamField>
+
+## Example prompts
+
+```
+Audit phantombuster.com
+```
+
+```
+Check the SEO of https://example.com
+```
+
+```
+How does my site score for AI visibility?
+```
+
+## Response structure
+
+The tool returns a JSON object with:
+
+<ResponseField name="combined_score" type="number">
+  Overall score combining SEO and AEO (0-100%)
+</ResponseField>
+
+<ResponseField name="seo" type="object">
+  SEO audit results
+  <Expandable title="properties">
+    <ResponseField name="grade" type="string">
+      Letter grade (A, B, C, D, F)
+    </ResponseField>
+    <ResponseField name="overall_score" type="number">
+      Points earned out of 380
+    </ResponseField>
+    <ResponseField name="categories" type="array">
+      7 category breakdowns (Content, Links, Technical, Performance, Security, Social, Accessibility)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="aeo" type="object">
+  AEO audit results
+  <Expandable title="properties">
+    <ResponseField name="percentage" type="number">
+      Percentage of checks passed (0-100%)
+    </ResponseField>
+    <ResponseField name="checks" type="array">
+      7 check results (robots_ai, llms_txt, freshness, faqs, faq_schema, direct_answer, sitemap)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="blog" type="object">
+  Blog detection results (if found)
+</ResponseField>
+
+<ResponseField name="sitemap" type="object">
+  Sitemap discovery and analysis
+</ResponseField>
+
+<ResponseField name="cached" type="boolean">
+  Whether results are from cache (less than 24h old)
+</ResponseField>
+
+## SEO categories
+
+The 30 SEO checks are organized into 7 categories:
+
+| Category | Checks | Focus |
+|----------|--------|-------|
+| **Content** | Title, description, headings, word count, readability | On-page content quality |
+| **Links** | Internal links, external links, broken links | Link structure |
+| **Technical** | Mobile-friendly, structured data, canonical URLs | Technical SEO |
+| **Performance** | Page speed, Core Web Vitals, image optimization | Loading speed |
+| **Security** | HTTPS, security headers, mixed content | Site security |
+| **Social** | Open Graph, Twitter cards, social meta tags | Social sharing |
+| **Accessibility** | Alt text, ARIA labels, semantic HTML | Accessibility |
+
+## AEO checks
+
+The 7 AEO checks verify your site is optimized for AI assistants:
+
+<Accordion title="robots_ai">
+  Verifies AI crawlers (GPTBot, ClaudeBot, PerplexityBot) are not blocked in robots.txt
+</Accordion>
+
+<Accordion title="llms_txt">
+  Checks for llms.txt file at domain root with valid structure
+</Accordion>
+
+<Accordion title="freshness">
+  Verifies datePublished and dateModified schema markup is present
+</Accordion>
+
+<Accordion title="faqs">
+  Checks if page contains FAQ content
+</Accordion>
+
+<Accordion title="faq_schema">
+  Verifies FAQPage schema markup is present and valid
+</Accordion>
+
+<Accordion title="direct_answer">
+  Checks for concise answer formats AI assistants prefer
+</Accordion>
+
+<Accordion title="sitemap">
+  Verifies sitemap.xml exists and is properly formatted
+</Accordion>
+
+## Usage example
+
+```python
+# How the tool is called in the MCP server
+@mcp.tool(annotations=READ_ONLY)
+def audit_site(url: str) -> str:
+    """Analyze a website's SEO performance and AI visibility."""
+    client = _get_client()
+    return _call(client.audit_site, url)
+```
+
+## When to use
+
+Use `audit_site` for:
+
+- **Any domain or homepage** — this is the default audit tool
+- **Initial site assessment** — get a comprehensive health check
+- **Regular monitoring** — cached results make frequent checks efficient
+- **Before optimization** — establish a baseline before making changes
+
+<Warning>
+Do not use `audit_site` for specific blog posts or articles. Use [audit_article](/tools/audit-article) instead for article-level analysis.
+</Warning>
+
+## Next steps
+
+After running `audit_site`, fix failing checks with:
+
+- [generate_llms_txt](/tools/generate-llms-txt) — if llms.txt check fails
+- [generate_robots_txt](/tools/generate-robots-txt) — if robots_ai check fails
+- [generate_sitemap](/tools/generate-sitemap) — if sitemap check fails
+- [audit_freshness](/tools/audit-freshness) — to check blog post freshness

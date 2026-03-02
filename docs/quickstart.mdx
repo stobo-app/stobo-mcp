@@ -1,0 +1,485 @@
+---
+title: Quick start
+description: Run your first Stobo audit and generate fixes in minutes
+---
+
+# Quick start
+
+This guide walks you through your first Stobo MCP workflow: auditing a website, identifying issues, and generating fixes — all from your AI assistant.
+
+<Note>
+  This quickstart uses free tools only. No API key required.
+</Note>
+
+## Run your first audit
+
+<Steps>
+  <Step title="Open your AI editor">
+    Launch Claude Desktop, Cursor, VS Code, or your configured MCP client.
+  </Step>
+  
+  <Step title="Ask for a site audit">
+    Run a full SEO + AEO audit on any website:
+    
+    ```
+    Audit https://example.com
+    ```
+    
+    The AI will use the `audit_site` tool to run:
+    
+    - **30 SEO checks** across 7 categories (Content, Links, Technical, Performance, Security, Social, Accessibility)
+    - **7 AEO checks** for AI discoverability (robots_ai, llms.txt, freshness, FAQs, FAQ schema, direct answers, sitemap)
+    - **Blog detection** to identify article-level content
+    - **Sitemap discovery** to map your content structure
+    
+    <Tip>
+      Results are cached for 24 hours. Re-running the same URL within 24h returns cached results instantly.
+    </Tip>
+  </Step>
+  
+  <Step title="Review the results">
+    The AI will present:
+    
+    - **Combined score** — SEO + AEO percentage
+    - **SEO grade** — Letter grade and points breakdown
+    - **AEO percentage** — AI visibility score
+    - **Category breakdown** — Performance across 7 SEO categories
+    - **AEO checklist** — Pass/fail for each of 7 checks
+    - **Top recommendations** — Prioritized fixes for failing checks
+    
+    Example output:
+    
+    ```
+    ## example.com — 68% (SEO + AEO)
+    SEO: B (258/380)
+    AEO: 57% (4/7)
+    
+    Category Breakdown:
+    - Content: 85%
+    - Links: 72%
+    - Technical: 65%
+    - Performance: 55%
+    - Security: 100%
+    - Social: 40%
+    - Accessibility: 70%
+    
+    AEO Checklist:
+    ✓ robots_ai — AI crawlers allowed
+    ✗ llms.txt — Missing
+    ✓ freshness — Date markup present
+    ✓ faqs — FAQ content found
+    ✗ faq_schema — FAQ schema missing
+    ✓ direct_answer — Concise answers present
+    ✗ sitemap — No sitemap found
+    ```
+  </Step>
+</Steps>
+
+## Fix failing checks
+
+After the audit, fix any failing AEO checks. The AI will often suggest these proactively.
+
+<Steps>
+  <Step title="Generate llms.txt (500 credits)">
+    If your `llms.txt` check failed:
+    
+    ```
+    Generate an llms.txt for https://example.com
+    ```
+    
+    The `generate_llms_txt` tool creates a ready-to-deploy llms.txt file following the [spec](https://llmstxt.org):
+    
+    ```text
+    # Example Site
+    https://example.com
+    
+    ## About
+    We build tools for developers.
+    
+    ## Products
+    - API Platform: RESTful API for...
+    - CLI Tool: Command-line interface for...
+    
+    ## Contact
+    Email: hello@example.com
+    ```
+    
+    Deploy this to `https://example.com/llms.txt`.
+    
+    <Warning>
+      This is a **premium tool** requiring 500 credits. Get credits at [trystobo.com](https://trystobo.com).
+    </Warning>
+  </Step>
+  
+  <Step title="Generate robots.txt (free)">
+    If AI crawlers are being blocked:
+    
+    ```
+    Create a robots.txt that allows AI crawlers
+    ```
+    
+    The `generate_robots_txt` tool creates an AI-friendly robots.txt:
+    
+    ```text
+    # AI Crawlers
+    User-agent: GPTBot
+    Allow: /
+    
+    User-agent: ClaudeBot
+    Allow: /
+    
+    User-agent: PerplexityBot
+    Allow: /
+    
+    User-agent: anthropic-ai
+    Allow: /
+    
+    User-agent: Bytespider
+    Allow: /
+    
+    # Search Engines
+    User-agent: Googlebot
+    Allow: /
+    
+    User-agent: Bingbot
+    Allow: /
+    ```
+    
+    Deploy to `https://example.com/robots.txt`.
+  </Step>
+  
+  <Step title="Generate sitemap.xml (free)">
+    If your sitemap is missing:
+    
+    ```
+    Generate a sitemap for https://example.com
+    ```
+    
+    The `generate_sitemap` tool crawls up to 200 URLs and builds a sitemap:
+    
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+      <url>
+        <loc>https://example.com/</loc>
+        <lastmod>2026-02-28</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+      </url>
+      <url>
+        <loc>https://example.com/blog/post-1</loc>
+        <lastmod>2026-02-20</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+      </url>
+    </urlset>
+    ```
+    
+    Deploy to `https://example.com/sitemap.xml`.
+  </Step>
+  
+  <Step title="Generate date markup (free)">
+    If freshness signals are missing:
+    
+    ```
+    Generate date markup for https://example.com/blog/my-post
+    ```
+    
+    The `generate_freshness_code` tool creates a schema.org snippet:
+    
+    ```html
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "My Post Title",
+      "datePublished": "2026-01-15",
+      "dateModified": "2026-02-28",
+      "author": {
+        "@type": "Organization",
+        "name": "Example Site"
+      }
+    }
+    </script>
+    ```
+    
+    Add to the `<head>` of your blog post.
+  </Step>
+</Steps>
+
+## Audit a specific article
+
+For blog posts, use `audit_article` to get article-level insights:
+
+<Steps>
+  <Step title="Run article audit">
+    ```
+    Audit https://example.com/blog/my-comprehensive-guide
+    ```
+    
+    The AI uses `audit_article` to run:
+    
+    - **7 SEO checks** — Title, meta description, headings, keyword usage, readability, word count, image alt text
+    - **14 AEO checks** — Freshness, FAQs, direct answers, schema markup, internal linking, external sources, content structure, etc.
+    
+    <Tip>
+      Optionally target a keyword:
+      
+      ```
+      Audit https://example.com/blog/my-guide targeting "content marketing"
+      ```
+    </Tip>
+  </Step>
+  
+  <Step title="Review article-specific recommendations">
+    You'll get targeted fixes for the article:
+    
+    - Missing or weak meta description
+    - Heading structure issues
+    - Readability improvements (Flesch-Kincaid score)
+    - Keyword optimization suggestions
+    - FAQ and schema markup recommendations
+  </Step>
+</Steps>
+
+## Extract brand voice and rewrite content
+
+For premium content optimization:
+
+<Steps>
+  <Step title="Extract your brand voice (500 credits)">
+    Analyze your writing style from existing blog posts:
+    
+    ```
+    Extract the brand voice from https://example.com/blog
+    ```
+    
+    The `extract_tone` tool:
+    
+    1. Discovers blog posts from your blog index or sitemap
+    2. Analyzes up to 10 articles
+    3. Creates a voice profile describing:
+       - Tone (professional, casual, technical, friendly, etc.)
+       - Vocabulary patterns
+       - Sentence structure
+       - Common phrases
+       - Style characteristics
+    
+    <Warning>
+      Requires 500 credits. Get credits at [trystobo.com](https://trystobo.com).
+    </Warning>
+  </Step>
+  
+  <Step title="Rewrite an article (1,000 credits)">
+    Optimize an article for SEO and AI visibility while keeping your voice:
+    
+    ```
+    Rewrite https://example.com/blog/my-article for better AI visibility
+    ```
+    
+    The `rewrite_article` tool:
+    
+    1. Audits the article (7 SEO + 14 AEO checks)
+    2. Identifies specific issues (missing FAQs, weak headings, poor keyword usage, etc.)
+    3. Rewrites the article to fix those issues
+    4. Maintains your brand voice (uses tone profile if available)
+    5. Returns the improved version
+    
+    <Warning>
+      Requires 1,000 credits. Get credits at [trystobo.com](https://trystobo.com).
+    </Warning>
+  </Step>
+</Steps>
+
+## Check content freshness across your blog
+
+Identify blog posts missing date markup:
+
+<Steps>
+  <Step title="Run freshness audit">
+    ```
+    Check freshness across my blog at https://example.com/sitemap.xml
+    ```
+    
+    The `audit_freshness` tool:
+    
+    1. Scans your sitemap (up to 50 URLs by default)
+    2. Checks each page for `datePublished` and `dateModified` schema
+    3. Reports which pages are missing freshness signals
+    
+    Example output:
+    
+    ```
+    Freshness Audit Results:
+    
+    ✓ 23 pages have proper date markup
+    ✗ 12 pages are missing dates:
+    
+    - /blog/old-post-1 — No date markup
+    - /blog/old-post-2 — No date markup
+    - /blog/guide-3 — Missing dateModified
+    ```
+  </Step>
+  
+  <Step title="Fix missing dates">
+    For each page without dates, generate markup:
+    
+    ```
+    Generate date markup for https://example.com/blog/old-post-1
+    ```
+    
+    Deploy the generated schema to the page's `<head>`.
+  </Step>
+</Steps>
+
+## Real-world workflow example
+
+Here's a complete audit → fix workflow:
+
+<Steps>
+  <Step title="Audit the site">
+    ```
+    Audit https://phantombuster.com
+    ```
+    
+    Response:
+    
+    ```
+    ## phantombuster.com — 72% (SEO + AEO)
+    SEO: B+ (285/380)
+    AEO: 43% (3/7)
+    
+    Failing AEO checks:
+    ✗ llms.txt — Missing
+    ✗ faq_schema — FAQ schema missing
+    ✗ sitemap — Sitemap incomplete
+    ✗ freshness — Some blog posts missing dates
+    ```
+  </Step>
+  
+  <Step title="Generate llms.txt">
+    ```
+    Generate an llms.txt for https://phantombuster.com
+    ```
+    
+    AI returns a ready-to-deploy llms.txt file.
+  </Step>
+  
+  <Step title="Fix sitemap">
+    ```
+    Generate a complete sitemap for https://phantombuster.com
+    ```
+    
+    AI crawls the site and builds a full sitemap.xml.
+  </Step>
+  
+  <Step title="Audit freshness">
+    ```
+    Check freshness across https://phantombuster.com/sitemap.xml
+    ```
+    
+    AI identifies 8 blog posts missing date markup.
+  </Step>
+  
+  <Step title="Fix freshness">
+    For each page:
+    
+    ```
+    Generate date markup for https://phantombuster.com/blog/post-1
+    Generate date markup for https://phantombuster.com/blog/post-2
+    ...
+    ```
+    
+    AI generates schema for each page.
+  </Step>
+  
+  <Step title="Re-audit">
+    ```
+    Audit https://phantombuster.com again
+    ```
+    
+    New score:
+    
+    ```
+    ## phantombuster.com — 89% (SEO + AEO)
+    SEO: B+ (285/380)
+    AEO: 86% (6/7)
+    ```
+    
+    All AEO checks now passing except FAQ schema.
+  </Step>
+</Steps>
+
+## Check your credits
+
+If using premium tools, monitor your balance:
+
+```
+How many credits do I have left?
+```
+
+The `get_credits` tool shows:
+
+- Plan type (free, starter, pro, enterprise)
+- Total credits purchased
+- Credits used this month
+- Remaining balance
+- Credit breakdown by tool
+
+## Sample prompts
+
+Here are more prompts to try:
+
+### Audits
+
+```
+"Audit phantombuster.com"
+"Check https://example.com for AI visibility"
+"What's failing on my site?"
+"Deep-dive https://example.com/blog/my-post"
+```
+
+### Fix generation
+
+```
+"My llms.txt is missing — generate one"
+"AI crawlers are blocked — fix my robots.txt"
+"Generate a sitemap for my site"
+"Add date markup to this page"
+```
+
+### Content optimization
+
+```
+"Extract my brand voice from my blog"
+"Rewrite this article for better SEO"
+"Optimize https://example.com/blog/guide"
+```
+
+### Diagnostics
+
+```
+"Check if Stobo is working"
+"Test the connection"
+"How many credits do I have left?"
+```
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Tool reference" icon="tools" href="/tools/overview">
+    Complete reference for all 11 Stobo MCP tools
+  </Card>
+  
+  <Card title="Workflows" icon="diagram-project" href="/guides/workflows">
+    Common patterns for combining tools
+  </Card>
+  
+  <Card title="Get API key" icon="key" href="https://trystobo.com">
+    Sign up for premium tools and credits
+  </Card>
+  
+  <Card title="GitHub" icon="github" href="https://github.com/stobo-app/stobo-mcp">
+    View source code and report issues
+  </Card>
+</CardGroup>

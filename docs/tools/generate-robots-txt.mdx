@@ -1,0 +1,148 @@
+---
+title: generate_robots_txt
+description: Create a robots.txt that welcomes AI crawlers like GPTBot, ClaudeBot, and PerplexityBot
+---
+
+Create a robots.txt file that allows AI crawlers while maintaining control over your site access.
+
+## Overview
+
+`generate_robots_txt` creates an AI-friendly robots.txt:
+
+- **AI crawler support** — allows GPTBot, ClaudeBot, PerplexityBot, and other AI bots
+- **Customizable rules** — maintains your existing access controls
+- **Best practices** — follows robots.txt standards
+- **Ready to deploy** — returns content you can paste into /robots.txt
+
+<Note>
+This tool is completely free and works without an API key.
+</Note>
+
+## Parameters
+
+<ParamField path="url" type="string" required>
+  Your website URL. The tool analyzes your current robots.txt (if any) and generates an improved version.
+</ParamField>
+
+## Example prompts
+
+```
+Create a robots.txt that allows AI crawlers
+```
+
+```
+Fix my blocked AI bots
+```
+
+```
+Generate an AI-friendly robots.txt for https://example.com
+```
+
+## Response structure
+
+The tool returns a JSON object with:
+
+<ResponseField name="content" type="string">
+  The complete robots.txt file content, ready to deploy at /robots.txt
+</ResponseField>
+
+<ResponseField name="ai_crawlers_allowed" type="array">
+  List of AI crawler user-agents that are now allowed
+</ResponseField>
+
+<ResponseField name="changes_made" type="array">
+  List of modifications made to your existing robots.txt (if any)
+</ResponseField>
+
+## Usage example
+
+```python
+# How the tool is called in the MCP server
+@mcp.tool(annotations=READ_ONLY)
+def generate_robots_txt(url: str) -> str:
+    """Create a robots.txt that welcomes AI crawlers."""
+    client = _get_client()
+    return _call(client.generate_robots_txt, url)
+```
+
+## AI crawlers supported
+
+The generated robots.txt allows these AI crawler user-agents:
+
+- **GPTBot** — OpenAI's crawler for ChatGPT
+- **ClaudeBot** — Anthropic's crawler for Claude
+- **PerplexityBot** — Perplexity AI's crawler
+- **Google-Extended** — Google's AI training crawler
+- **anthropic-ai** — Anthropic's general AI crawler
+- **Applebot-Extended** — Apple Intelligence crawler
+- **Diffbot** — Knowledge graph crawler
+- **FacebookBot** — Meta's AI crawler
+- **ImagesiftBot** — Image AI crawler
+
+Example generated robots.txt:
+
+```
+User-agent: *
+Allow: /
+
+# AI Crawlers - Explicitly allowed for better AI visibility
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Sitemap
+Sitemap: https://example.com/sitemap.xml
+```
+
+## When to use
+
+Use `generate_robots_txt` when:
+
+- **audit_site shows robots_ai check fails** — AI crawlers are being blocked
+- **New site launch** — ensure AI visibility from day one
+- **Existing robots.txt blocks AI** — fix overly restrictive rules
+- **Want to control AI access** — explicitly allow specific AI bots
+
+<Warning>
+Make sure you want to allow AI crawlers before deploying. Some sites prefer to block AI training bots for content protection.
+</Warning>
+
+## Deployment
+
+After generating the file:
+
+1. Copy the `content` from the response
+2. Save it as `robots.txt` at your domain root
+3. Deploy to `https://yourdomain.com/robots.txt`
+4. Verify it's accessible publicly
+5. Test with robots.txt validators
+
+<Note>
+The file must be at your domain root (/robots.txt), not in a subdirectory.
+</Note>
+
+## Maintaining access controls
+
+The generator preserves your existing access rules:
+
+- Existing `Disallow` rules are maintained
+- Sitemap references are preserved
+- Custom user-agent rules are kept
+- Only adds AI crawler permissions that are missing
+
+<Tip>
+If you have sensitive areas (admin panels, private content), keep those `Disallow` rules in place. The generator only adds AI crawler permissions, it doesn't remove your security rules.
+</Tip>
+
+## Next steps
+
+- [audit_site](/tools/audit-site) — verify robots_ai check passes after deployment
+- [generate_sitemap](/tools/generate-sitemap) — add sitemap reference to robots.txt

@@ -1,0 +1,94 @@
+---
+title: Troubleshooting
+description: Common issues and solutions when using Stobo MCP server
+---
+
+This guide covers common issues you may encounter when using Stobo MCP and how to resolve them.
+
+## Common issues
+
+<AccordionGroup>
+  <Accordion title="No API key configured">
+    Free tools work without a key. If you're calling a paid tool (`generate_llms_txt`, `extract_tone`, `rewrite_article`, or `get_credits`):
+
+    1. Sign up at [trystobo.com](https://trystobo.com)
+    2. Go to **Settings > API Keys**
+    3. Add `STOBO_API_KEY` to your editor config
+    4. Restart your editor
+
+    <Note>
+      Tools like `audit_site`, `audit_article`, `generate_robots_txt`, `generate_sitemap`, `generate_freshness_code`, and `audit_freshness` all work without an API key.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Your API key is invalid or expired">
+    If you receive an authentication error:
+
+    1. Log in at [trystobo.com](https://trystobo.com)
+    2. Navigate to **Settings > API Keys**
+    3. Generate a new API key
+    4. Update `STOBO_API_KEY` in your MCP server config
+    5. Restart your editor
+
+    The error response includes a status code of `401` or `403`.
+  </Accordion>
+
+  <Accordion title="You've run out of credits">
+    When you see this error (status code `402`):
+
+    - Top up your credits at [trystobo.com](https://trystobo.com)
+    - Free tools continue to work without credits
+    - Check your remaining balance using the `get_credits` tool
+
+    <Warning>
+      Only `generate_llms_txt` (500 credits), `extract_tone` (500 credits), and `rewrite_article` (1,000 credits) consume credits. All other tools are free.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Rate limit reached">
+    If you hit rate limits:
+
+    - Wait a moment and try again
+    - Rate limits reset quickly
+    - Normal conversational use stays well within limits
+
+    The server returns a `429` status code for rate limit errors.
+  </Accordion>
+
+  <Accordion title="Connection issues">
+    To diagnose connection problems:
+
+    1. Ask your AI assistant to run the `check_connection` tool
+    2. Check your internet connection
+    3. Verify `STOBO_BASE_URL` is not set (it defaults to the correct value)
+    4. Try again in a few minutes if the API is temporarily down
+
+    The `check_connection` tool returns diagnostic information including:
+    - Current base URL being used
+    - Whether an API key is configured
+    - HTTP status code or connection error details
+    - Suggested fixes for common issues
+  </Accordion>
+
+  <Accordion title="Tool not showing up in your editor">
+    If Stobo tools aren't appearing:
+
+    1. Save your config file and **restart** the editor completely
+    2. Verify `uvx` is installed by running `uvx --version` in your terminal
+    3. Test the server manually: `uvx --native-tls stobo-mcp` — it should start without errors
+    4. Check that your config file syntax is valid JSON
+    5. Ensure the config file is in the correct location for your editor
+
+    <Note>
+      For Claude Desktop, the config is at `~/Library/Application Support/Claude/claude_desktop_config.json` on macOS or `%APPDATA%\Claude\claude_desktop_config.json` on Windows.
+    </Note>
+  </Accordion>
+</AccordionGroup>
+
+## Getting help
+
+If you're still experiencing issues:
+
+- Check the [GitHub repository](https://github.com/stobo-app/stobo-mcp) for known issues
+- Review the [installation guide](/quickstart) to ensure correct setup
+- Contact Stobo support through [trystobo.com](https://trystobo.com)

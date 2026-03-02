@@ -1,0 +1,528 @@
+---
+title: Editor setup
+description: Configure Stobo MCP in Claude Desktop, Cursor, VS Code, Windsurf, and other MCP-compatible editors
+---
+
+Stobo MCP works with any MCP-compatible AI editor. This guide shows you how to configure it in the most popular tools.
+
+## Prerequisites
+
+Before setting up Stobo MCP, ensure you have:
+
+<CardGroup cols={2}>
+  <Card title="UV runtime installed" icon="cube">
+    Install `uv` for the `uvx` command:
+    
+    ```bash
+    pip install uv
+    ```
+    
+    or
+    
+    ```bash
+    brew install uv
+    ```
+  </Card>
+  
+  <Card title="Stobo API key (optional)" icon="key">
+    Get a free API key at [trystobo.com](https://trystobo.com).
+    
+    Only needed for paid tools (`generate_llms_txt`, `extract_tone`, `rewrite_article`).
+  </Card>
+</CardGroup>
+
+<Note>
+  You can use Stobo MCP **without an API key** to access all free tools (audits, robots.txt, sitemap, freshness code).
+</Note>
+
+---
+
+## Setup by editor
+
+<Tabs>
+  <Tab title="Claude Desktop">
+    ### Claude Desktop (macOS/Windows)
+    
+    Claude Desktop is the most popular MCP client. Configuration is done via a JSON config file.
+    
+    #### macOS
+    
+    Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
+    
+    ```json
+    {
+      "mcpServers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"],
+          "env": {
+            "STOBO_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+    
+    #### Windows
+    
+    Edit `%APPDATA%\Claude\claude_desktop_config.json`:
+    
+    ```json
+    {
+      "mcpServers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"],
+          "env": {
+            "STOBO_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+    
+    #### Without an API key
+    
+    Remove the `env` block entirely:
+    
+    ```json
+    {
+      "mcpServers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"]
+        }
+      }
+    }
+    ```
+    
+    #### Restart Claude Desktop
+    
+    Close Claude Desktop completely and reopen it. The Stobo MCP server will start automatically.
+    
+    #### Verify setup
+    
+    Ask Claude:
+    
+    ```
+    What Stobo tools are available?
+    ```
+    
+    You should see the full list of 10 tools.
+  </Tab>
+  
+  <Tab title="Claude Code (CLI)">
+    ### Claude Code (CLI)
+    
+    Claude Code is the official CLI for Claude with built-in MCP support.
+    
+    #### Add Stobo MCP
+    
+    ```bash
+    claude mcp add stobo -- uvx --native-tls stobo-mcp
+    ```
+    
+    #### Set your API key
+    
+    Export the key in your shell:
+    
+    ```bash
+    export STOBO_API_KEY="your-api-key"
+    ```
+    
+    Add this to your `~/.bashrc`, `~/.zshrc`, or `~/.config/fish/config.fish` to persist it.
+    
+    #### Without an API key
+    
+    Skip the `export` step. Free tools will work without a key.
+    
+    #### Verify setup
+    
+    Start a conversation:
+    
+    ```bash
+    claude
+    ```
+    
+    Then ask:
+    
+    ```
+    What Stobo tools do you have?
+    ```
+  </Tab>
+  
+  <Tab title="Cursor">
+    ### Cursor
+    
+    Cursor is a VS Code fork with built-in AI and MCP support.
+    
+    #### Add Stobo MCP
+    
+    1. Open **Settings** (Cmd+, or Ctrl+,)
+    2. Navigate to **MCP Servers > Add Server**
+    3. Paste this config:
+    
+    ```json
+    {
+      "stobo": {
+        "command": "uvx",
+        "args": ["--native-tls", "stobo-mcp"],
+        "env": {
+          "STOBO_API_KEY": "your-api-key"
+        }
+      }
+    }
+    ```
+    
+    #### Without an API key
+    
+    Remove the `env` block:
+    
+    ```json
+    {
+      "stobo": {
+        "command": "uvx",
+        "args": ["--native-tls", "stobo-mcp"]
+      }
+    }
+    ```
+    
+    #### Restart Cursor
+    
+    Close and reopen Cursor for the changes to take effect.
+    
+    #### Verify setup
+    
+    Open the AI chat panel (Cmd+K or Ctrl+K) and ask:
+    
+    ```
+    List Stobo tools
+    ```
+  </Tab>
+  
+  <Tab title="VS Code (Copilot)">
+    ### VS Code with GitHub Copilot
+    
+    VS Code with Copilot supports MCP via a workspace-level config file.
+    
+    #### Add Stobo MCP
+    
+    Create `.vscode/mcp.json` in your project root:
+    
+    ```json
+    {
+      "servers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"],
+          "env": {
+            "STOBO_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+    
+    #### Without an API key
+    
+    Remove the `env` block:
+    
+    ```json
+    {
+      "servers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"]
+        }
+      }
+    }
+    ```
+    
+    #### Reload VS Code
+    
+    Run **Developer: Reload Window** (Cmd+Shift+P or Ctrl+Shift+P).
+    
+    #### Verify setup
+    
+    Open Copilot Chat and ask:
+    
+    ```
+    What Stobo tools are available?
+    ```
+  </Tab>
+  
+  <Tab title="Windsurf">
+    ### Windsurf
+    
+    Windsurf is an AI-first code editor by Codeium with native MCP support.
+    
+    #### Add Stobo MCP
+    
+    Edit `~/.codeium/windsurf/mcp_config.json`:
+    
+    ```json
+    {
+      "mcpServers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"],
+          "env": {
+            "STOBO_API_KEY": "your-api-key"
+          }
+        }
+      }
+    }
+    ```
+    
+    #### Without an API key
+    
+    Remove the `env` block:
+    
+    ```json
+    {
+      "mcpServers": {
+        "stobo": {
+          "command": "uvx",
+          "args": ["--native-tls", "stobo-mcp"]
+        }
+      }
+    }
+    ```
+    
+    #### Restart Windsurf
+    
+    Close and reopen Windsurf.
+    
+    #### Verify setup
+    
+    Open the AI panel and ask:
+    
+    ```
+    Show me Stobo tools
+    ```
+  </Tab>
+</Tabs>
+
+---
+
+## Advanced configuration
+
+### Using a different base URL
+
+If you're using a self-hosted Stobo API or a custom endpoint, set `STOBO_BASE_URL`:
+
+```json
+{
+  "mcpServers": {
+    "stobo": {
+      "command": "uvx",
+      "args": ["--native-tls", "stobo-mcp"],
+      "env": {
+        "STOBO_API_KEY": "your-api-key",
+        "STOBO_BASE_URL": "https://custom-api.example.com"
+      }
+    }
+  }
+}
+```
+
+<Note>
+  Only change `STOBO_BASE_URL` if told to by Stobo support. The default (`https://api.trystobo.com`) works for 99% of users.
+</Note>
+
+### Installing stobo-mcp globally (alternative to uvx)
+
+If you prefer not to use `uvx`, install the package globally:
+
+```bash
+pip install stobo-mcp
+```
+
+Then update your config to use the installed command:
+
+```json
+{
+  "mcpServers": {
+    "stobo": {
+      "command": "stobo-mcp",
+      "env": {
+        "STOBO_API_KEY": "your-api-key"
+      }
+    }
+  }
+}
+```
+
+<Tip>
+  We recommend `uvx` because it auto-installs and updates the package. With a global install, you need to manually run `pip install --upgrade stobo-mcp` to get updates.
+</Tip>
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Tools not showing up in my editor">
+    **Symptoms:** Your AI assistant doesn't recognize Stobo tools.
+    
+    **Fixes:**
+    
+    1. **Restart your editor** — MCP servers only load on startup
+    2. **Check your config file path** — Ensure you edited the correct file:
+       - Claude Desktop (macOS): `~/Library/Application Support/Claude/claude_desktop_config.json`
+       - Claude Desktop (Windows): `%APPDATA%\Claude\claude_desktop_config.json`
+       - Cursor: Settings > MCP Servers
+       - VS Code: `.vscode/mcp.json` in your project
+       - Windsurf: `~/.codeium/windsurf/mcp_config.json`
+    3. **Verify uvx is installed**:
+       ```bash
+       uvx --version
+       ```
+       If not found, install it:
+       ```bash
+       pip install uv
+       ```
+    4. **Test manually**:
+       ```bash
+       uvx --native-tls stobo-mcp
+       ```
+       It should start without errors. Press Ctrl+C to stop.
+  </Accordion>
+  
+  <Accordion title="No API key configured error">
+    **Symptoms:** You see "No API key configured" when using a paid tool.
+    
+    **Fixes:**
+    
+    1. **Sign up at trystobo.com** and generate an API key
+    2. **Add the key to your config**:
+       ```json
+       "env": {
+         "STOBO_API_KEY": "your-api-key"
+       }
+       ```
+    3. **Restart your editor**
+    
+    **Note:** Free tools (`audit_site`, `audit_article`, `generate_robots_txt`, etc.) work without a key. Only paid tools require authentication.
+  </Accordion>
+  
+  <Accordion title="API key is invalid or expired">
+    **Symptoms:** You see "Your API key is invalid or expired."
+    
+    **Fixes:**
+    
+    1. Log in to [trystobo.com](https://trystobo.com)
+    2. Go to **Settings > API Keys**
+    3. Delete your old key and create a new one
+    4. Update your MCP config with the new key
+    5. Restart your editor
+  </Accordion>
+  
+  <Accordion title="Connection refused or timeout">
+    **Symptoms:** Tools fail with "connection refused" or "timeout" errors.
+    
+    **Fixes:**
+    
+    1. **Check your internet connection**
+    2. **Run the diagnostics tool**:
+       Ask your AI assistant:
+       ```
+       Check if Stobo is working
+       ```
+       This runs `check_connection` and shows:
+       - Whether the API is reachable
+       - Your base URL
+       - Whether you have an API key configured
+    3. **Verify STOBO_BASE_URL is not set** (unless you're using a custom endpoint)
+    4. **Try again in a few minutes** — the API may be temporarily down
+  </Accordion>
+  
+  <Accordion title="Rate limit reached">
+    **Symptoms:** You see "Rate limit reached. Please wait a moment and try again."
+    
+    **Fixes:**
+    
+    1. **Wait a few seconds** and retry — rate limits reset quickly
+    2. **Use caching** — Don't re-run the same audit unnecessarily (results are cached 24h)
+    3. **Batch requests** — Instead of 10 separate prompts, ask "Audit these 10 URLs" so the AI runs them in parallel
+    
+    **Note:** Normal conversational use stays well within rate limits. This error usually means you're running tools in a tight loop.
+  </Accordion>
+  
+  <Accordion title="Out of credits">
+    **Symptoms:** You see "You've run out of credits."
+    
+    **Fixes:**
+    
+    1. Log in to [trystobo.com](https://trystobo.com)
+    2. Go to **Settings > Billing**
+    3. Purchase credits or upgrade your plan
+    4. Continue using paid tools — credits are added instantly
+    
+    **Note:** Free tools (`audit_site`, `audit_article`, etc.) continue to work even with zero credits.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Testing your setup
+
+Once configured, test that Stobo MCP is working:
+
+<Steps>
+  <Step title="Ask for the tool list">
+    ```
+    What Stobo tools do you have?
+    ```
+    
+    You should see 10 tools listed in two groups: "Free — no setup needed" and "Requires API key".
+  </Step>
+  
+  <Step title="Run a free audit">
+    ```
+    Audit https://example.com
+    ```
+    
+    This runs `audit_site` (free, no key needed). You should get a combined SEO + AEO score.
+  </Step>
+  
+  <Step title="Test a paid tool (if you have an API key)">
+    ```
+    How many credits do I have left?
+    ```
+    
+    This runs `get_credits` and shows your balance. If you see your plan and usage, your API key is working.
+  </Step>
+  
+  <Step title="Generate a free fix">
+    ```
+    Generate a robots.txt for https://example.com
+    ```
+    
+    This runs `generate_robots_txt` (free). You should get a ready-to-deploy robots.txt file.
+  </Step>
+</Steps>
+
+If all four steps work, your setup is complete.
+
+---
+
+## Next steps
+
+<CardGroup cols={2}>
+  <Card title="Learn common workflows" icon="list-check" href="/guides/workflows">
+    See step-by-step guides for auditing, fixing, and optimizing your site.
+  </Card>
+  
+  <Card title="Understand pricing" icon="coins" href="/guides/pricing">
+    Learn which tools are free and how credits work.
+  </Card>
+  
+  <Card title="Explore all tools" icon="wrench" href="/tools/overview">
+    Browse the full tool reference with parameters and examples.
+  </Card>
+  
+  <Card title="Get help" icon="life-ring" href="https://github.com/stobo-app/stobo-mcp/issues">
+    Report issues or ask questions on GitHub.
+  </Card>
+</CardGroup>
