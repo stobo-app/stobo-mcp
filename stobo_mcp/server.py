@@ -93,10 +93,12 @@ def _get_client() -> StoboClient:
     )
 
 
-def _call(fn, *args, **kwargs) -> str:
+def _call(fn, *args, transform=None, **kwargs) -> str:
     """Call a client method and return JSON string, handling errors."""
     try:
         result = fn(*args, **kwargs)
+        if transform is not None:
+            result = transform(result)
         return json.dumps(result, indent=2, default=str)
     except AuthError as e:
         has_key = bool(os.environ.get("STOBO_API_KEY", ""))
@@ -132,6 +134,91 @@ def _call(fn, *args, **kwargs) -> str:
         return json.dumps({"error": str(e)})
 
 
+def _trim_site_audit(data: dict) -> dict:
+    """Strip a site audit response to essentials (~5KB instead of ~249KB)."""
+    if not isinstance(data, dict):
+        return data
+
+    out: dict = {}
+
+    # Top-level scalars
+    for key in ("url", "domain", "cached", "combined_percentage", "pages_analyzed"):
+        if key in data:
+            out[key] = data[key]
+
+    # SEO audit — keep scores + top 10 recommendations (slim)
+    seo = data.get("seo_audit")
+    if seo and isinstance(seo, dict):
+        trimmed_seo: dict = {}
+        for key in (
+            "id",
+            "grade",
+            "overall_score",
+            "total_points",
+            "max_points",
+            "category_scores",
+        ):
+            if key in seo:
+                trimmed_seo[key] = seo[key]
+        recs = seo.get("recommendations") or []
+        trimmed_seo["recommendations"] = [
+            {k: r[k] for k in ("check", "message", "fix_type") if k in r}
+            for r in recs[:10]
+        ]
+        out["seo_audit"] = trimmed_seo
+
+    # AEO audit — keep scores + check summaries (no details)
+    aeo = data.get("aeo_audit")
+    if aeo and isinstance(aeo, dict):
+        trimmed_aeo: dict = {}
+        for key in ("score", "max_points", "percentage"):
+            if key in aeo:
+                trimmed_aeo[key] = aeo[key]
+        checks = aeo.get("checks")
+        if checks and isinstance(checks, dict):
+            trimmed_aeo["checks"] = {
+                name: {
+                    k: v
+                    for k, v in check.items()
+                    if k in ("status", "score", "max_points", "message")
+                }
+                for name, check in checks.items()
+            }
+        out["aeo_audit"] = trimmed_aeo
+
+    # EEAT audit — just grade + composite
+    eeat = data.get("eeat_audit")
+    if eeat and isinstance(eeat, dict):
+        out["eeat_audit"] = {
+            k: eeat[k] for k in ("grade", "composite_percentage") if k in eeat
+        }
+
+    # Blog detection — as-is (tiny)
+    if "blog_detection" in data:
+        out["blog_detection"] = data["blog_detection"]
+
+    # Sitemap discovery — strip URL lists from categories
+    sitemap = data.get("sitemap_discovery")
+    if sitemap and isinstance(sitemap, dict):
+        trimmed_sitemap: dict = {}
+        for key in ("total_urls", "blog_article_count"):
+            if key in sitemap:
+                trimmed_sitemap[key] = sitemap[key]
+        cats = sitemap.get("categories")
+        if cats and isinstance(cats, list):
+            trimmed_sitemap["categories"] = [
+                {k: c[k] for k in ("name", "slug", "count") if k in c} for c in cats
+            ]
+        out["sitemap_discovery"] = trimmed_sitemap
+
+    # Error fields — pass through
+    for key in ("seo_error", "aeo_error", "eeat_error"):
+        if key in data:
+            out[key] = data[key]
+
+    return out
+
+
 # ── Audits ───────────────────────────────────────────────────────────
 
 
@@ -139,7 +226,7 @@ def _call(fn, *args, **kwargs) -> str:
 def audit_site(url: str) -> str:
     """Analyze a website's SEO performance and AI visibility. Runs 30 SEO checks, 7 AEO checks, detects your blog, and maps your sitemap. This is the main tool — use it for any website or homepage. Results are cached for 24 hours."""
     client = _get_client()
-    return _call(client.audit_site, url)
+    return _call(client.audit_site, url, transform=_trim_site_audit)
 
 
 @mcp.tool(annotations=READ_ONLY)
