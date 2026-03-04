@@ -1,8 +1,82 @@
 <!-- mcp-name: io.github.stobo-app/seo-audit -->
+<!-- docs: https://docs.trystobo.com -->
 
 # Stobo MCP Server
 
-MCP server for [Stobo](https://trystobo.com) — AI-powered SEO/AEO content optimization. Use Stobo's audit, tone extraction, llms.txt generation, and optimization tools directly from Claude Desktop.
+**Docs:** [docs.trystobo.com](https://docs.trystobo.com)
+
+Audit any site for SEO, AEO, and E-E-A-T from Claude Desktop. Get a structured fix brief your developer can drop straight into Claude Code, Cursor, or VS Code and start shipping.
+
+```
+You: stobo this site: example.com
+
+Claude: I just received a complete audit for example.com. SEO, AEO, EEAT,
+per-page breakdowns, 30+ checks with scores and details.
+
+Want me to generate a fix brief you can download and drop into
+Claude Code, Cursor, or hand off to your developer?
+```
+
+---
+
+## Why not just use web_fetch?
+
+Fetching every page manually costs ~386,000 tokens across 16+ calls. It still misses Core Web Vitals, TTFB, and Flesch-Kincaid. Those metrics require server-side computation. Stobo runs everything in one call.
+
+| | Manual (web_fetch) | Stobo MCP |
+|---|---|---|
+| `audit_site` | 71,000 tk · 6 fetches | 20,000 tk · 1 call |
+| `audit_freshness` | 60,000 tk · 20 fetches | 3,000 tk · 1 call |
+| `generate_llms_txt` | 35,000 tk · 6 fetches | 3,000 tk · 1 call |
+| `extract_tone` | 35,000 tk · 10 fetches | 5,000 tk · 1 call |
+| **Full suite** | **264,500 tk · 56 fetches** | **47,000 tk · 9 calls** |
+
+82% fewer tokens. And you get metrics Claude cannot compute from raw HTML alone.
+
+---
+
+## What happens after an audit
+
+Claude receives 30+ scored checks across SEO, AEO, and E-E-A-T. It then offers a fix brief: structured markdown with every failing check, prioritized by impact, with specific fix instructions. Paste it into Claude Code, Cursor, or VS Code and start shipping.
+
+Claude also offers generators for quick wins. Failing robots.txt? Claude generates one. Same for llms.txt, sitemap, and freshness code. The audit-to-fix loop runs in a single conversation.
+
+---
+
+## Tools
+
+### Free — no API key required
+
+| Say to Claude | What it does | Tool |
+|---|---|---|
+| "Stobo this site: example.com" | 30 SEO + 7 AEO checks + E-E-A-T + blog detection across your whole site | `audit_site` |
+| "Audit this article: example.com/blog/post" | 7 SEO + 14 AEO checks on a single article | `audit_article` |
+| "Generate a fix brief" | Structured markdown fix brief from a completed audit. Numbered tasks, priority order, fix instructions. IDE-ready. | `generate_fix_brief` |
+| "Check freshness across example.com/sitemap.xml" | Scan your sitemap for datePublished and dateModified coverage | `audit_freshness` |
+| "Generate a robots.txt for example.com" | AI-crawler-friendly robots.txt. All 21 major bots covered. | `generate_robots_txt` |
+| "Generate a sitemap for example.com" | BFS-crawl up to 200 URLs and return a sitemap.xml | `generate_sitemap` |
+| "Generate freshness code for example.com/blog/post" | JSON-LD snippet with datePublished and dateModified | `generate_freshness_code` |
+| "Check connection" | Diagnostic ping. Also tells you if a newer MCP version is available. | `check_connection` |
+
+### Premium — coming soon
+
+| Say to Claude | What it does | Tool |
+|---|---|---|
+| "Generate llms.txt for example.com" | Crawl your site and return a spec-compliant llms.txt | `generate_llms_txt` |
+| "Extract brand voice from example.com/blog" | Analyze up to 10 articles and create a persistent voice profile | `extract_tone` |
+| "Rewrite this article: example.com/blog/post" | Audit + tone match + full rewrite in one pipeline | `rewrite_article` |
+| "Audit the UX of example.com" | 50+ UX checks across accessibility, forms, typography, and navigation | `audit_ux` |
+| "How many credits do I have?" | Credit balance and usage breakdown | `get_credits` |
+
+---
+
+## Routing
+
+- Domain or homepage → `audit_site`
+- Blog post or article URL → `audit_article`
+- After any audit → Claude offers `generate_fix_brief` automatically
+
+---
 
 ## Install
 
@@ -10,9 +84,21 @@ MCP server for [Stobo](https://trystobo.com) — AI-powered SEO/AEO content opti
 pip install stobo-mcp
 ```
 
+No install with `uvx`:
+
+```bash
+uvx stobo-mcp
+```
+
+---
+
 ## Setup
 
-Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+Add to your Claude Desktop config.
+
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -28,102 +114,30 @@ Add to your Claude Desktop config (`~/Library/Application Support/Claude/claude_
 }
 ```
 
-## Available Tools (19)
+`STOBO_API_KEY` is optional. Every audit and fix brief tool works without one. API key support for premium tools is coming soon.
 
-### Site & Article Audits
+Full setup guide at [docs.trystobo.com](https://docs.trystobo.com).
 
-| Tool | Auth | Description |
-|------|------|-------------|
-| `audit_site` | Free | **Main entry point.** Full site audit: 30 SEO + 7 AEO checks + blog detection + sitemap discovery |
-| `audit_article` | Free | Article-level SEO + AEO audit (for specific blog posts) |
-| `audit_seo` | Free | SEO-only audit on a single page |
-| `audit_aeo` | Free | AEO-only audit on a single page |
-| `get_audit` | Key | Fetch audit results by ID |
-| `list_audits` | Key | List recent audits |
+---
 
-### Brand Voice & Optimization
+## Upgrades
 
-| Tool | Auth | Description |
-|------|------|-------------|
-| `extract_tone` | Paid | Extract brand voice profile from a blog (500 credits) |
-| `get_tone` | Key | Get a stored tone profile |
-| `list_tone_profiles` | Key | List all tone profiles |
-| `delete_tone` | Key | Delete a stored tone profile |
-| `optimize` | Paid | Start full optimization pipeline: audit + tone + rewrite (1,000 credits) |
-| `get_job` | Key | Check optimization job status |
-| `get_job_preview` | Key | Get before/after preview of a completed optimization |
-| `list_jobs` | Key | List optimization jobs |
+```bash
+pip install --upgrade stobo-mcp
+```
 
-### Content & Reports
+Run `check_connection`. Claude tells you if a newer version is available.
 
-| Tool | Auth | Description |
-|------|------|-------------|
-| `generate_llms_txt` | Paid | Generate a llms.txt file for AI discoverability (500 credits) |
-| `freshness_audit` | Free | Audit sitemap for content freshness (dateModified schema) |
-| `get_freshness` | Key | Get a previously completed freshness audit |
-| `export_report` | Paid | Generate a markdown report (200 credits) |
-| `get_export` | Key | Get a cached export report |
+---
 
-### Account
+## What's new in v0.5.0
 
-| Tool | Auth | Description |
-|------|------|-------------|
-| `get_credits` | Key | Check credit usage, balance, and breakdown |
+- `generate_fix_brief`: structured fix brief from any completed audit. Free, instant, no LLM.
+- Claude now offers a fix brief automatically after every `audit_site` or `audit_article` run.
+- `check_connection` reports when a newer version is available.
+- Version strings are now consistent across server, client, and package.
 
-## Routing Rules
-
-- **Default:** Use `audit_site` for any domain, homepage, or generic "audit this" request
-- **Only** use `audit_article` when the URL is clearly a specific blog post (contains `/blog/`, `/post/`, `/article/`)
-
-Examples:
-- "audit phantombuster.com" -> `audit_site`
-- "audit https://example.com" -> `audit_site`
-- "check https://example.com/blog/my-post" -> `audit_article`
-
-## Usage in Claude Desktop
-
-Just ask Claude:
-
-- "Audit https://example.com" (uses audit_site)
-- "Deep-dive https://example.com/blog/my-post" (uses audit_article)
-- "Extract the brand voice from https://example.com/blog"
-- "Generate a llms.txt for https://example.com"
-- "Optimize https://example.com/blog/my-article"
-- "How many credits do I have left?"
-
-## What's New in 0.2.0
-
-- `audit_site` — full website audit with combined score, SEO categories, AEO checklist, blog detection, sitemap discovery
-- `generate_llms_txt` — create spec-compliant llms.txt files
-- `delete_tone` — delete stored brand voice profiles
-- `get_job_preview` / `list_jobs` — optimization job management
-- `get_freshness` / `get_export` — retrieve cached results
-- `get_credits` — check credit usage and balance
-- Improved tool descriptions with routing rules and formatting guidance
-
-## Why MCP instead of web_fetch?
-
-Without Stobo, auditing a site means fetching every page with `web_fetch`, pasting raw HTML into context, and asking Claude to parse it. A single `audit_site` run would cost **~386,000 tokens** and 16 separate fetches — and still miss metrics that require server-side computation.
-
-With Stobo MCP, the same audit is **one tool call, ~20,000 tokens**.
-
-| | Manual (web_fetch) | Stobo MCP |
-|---|---|---|
-| `audit_site` | 71,000 tk / 6 fetches | 20,000 tk / 1 call |
-| `audit_freshness` | 60,000 tk / 20 fetches | 3,000 tk / 1 call |
-| `generate_llms_txt` | 35,000 tk / 6 fetches | 3,000 tk / 1 call |
-| `extract_tone` | 35,000 tk / 10 fetches | 5,000 tk / 1 call |
-| **All 9 tools** | **264,500 tk / 56 fetches** | **47,000 tk / 9 calls** |
-
-That's **82% fewer tokens** across the full tool suite.
-
-Stobo also computes metrics Claude can't get from raw HTML alone: Core Web Vitals (Playwright), TTFB timing, HTTP status codes for all links, and Flesch-Kincaid readability scoring.
-
-## Get an API Key
-
-1. Sign up at [trystobo.com](https://trystobo.com)
-2. Go to Settings > API Keys
-3. Create a new key and add it to your Claude Desktop config
+---
 
 ## License
 
