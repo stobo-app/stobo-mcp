@@ -58,6 +58,11 @@ After showing audit results, offer to fix any failing AEO checks:
 
 These generators are free and produce ready-to-deploy files.
 
+FIX BRIEF — DEVELOPER HANDOFF:
+After showing audit results and proactive fix suggestions, ALWAYS offer:
+"Want me to generate a fix brief you can download and drop straight into Claude Code, Cursor, or hand off to your developer?"
+When the user accepts, call generate_fix_brief with the audit_id from seo_audit.id.
+
 TOOL LIST FORMAT — MANDATORY:
 When the user asks what tools/commands are available, you MUST use EXACTLY this format with these two groups. Do NOT invent your own categories. Do NOT show parameter names. Copy this structure verbatim:
 
@@ -69,6 +74,7 @@ When the user asks what tools/commands are available, you MUST use EXACTLY this 
 `generate_robots_txt` — Create a robots.txt that welcomes AI crawlers
 `generate_sitemap` — Create a sitemap.xml for your website
 `generate_freshness_code` — Create date markup for a page
+`generate_fix_brief` — Generate a developer fix brief from an audit
 
 **Requires API key**
 
@@ -83,7 +89,7 @@ def _get_client() -> StoboClient:
     api_key = os.environ.get("STOBO_API_KEY", "")
     base_url = os.environ.get("STOBO_BASE_URL", "https://api.trystobo.com")
     return StoboClient(
-        base_url=base_url, api_key=api_key, user_agent="stobo-mcp/0.4.2", source="mcp"
+        base_url=base_url, api_key=api_key, user_agent="stobo-mcp/0.5.0", source="mcp"
     )
 
 
@@ -180,6 +186,24 @@ def generate_freshness_code(url: str) -> str:
     return _call(client.generate_freshness_code, url)
 
 
+@mcp.tool(annotations=READ_ONLY)
+def generate_fix_brief(audit_id: str) -> str:
+    """Generate a structured fix brief from a completed audit. Returns markdown
+    with all failing checks prioritized by impact, with fix instructions.
+    Ready to paste into Claude Code, Cursor, or any AI coding assistant.
+    Free, instant.
+
+    The audit_id comes from the seo_audit.id field in audit_site results."""
+    client = _get_client()
+    try:
+        result = client.generate_fix_brief(audit_id)
+        return result["markdown"]
+    except StoboAPIError as e:
+        return json.dumps({"error": e.detail, "status_code": e.status_code})
+    except Exception as e:
+        return json.dumps({"error": str(e)})
+
+
 # ── Content optimization ─────────────────────────────────────────────
 
 
@@ -235,7 +259,10 @@ def get_credits() -> str:
 @mcp.tool(annotations=READ_ONLY)
 def check_connection() -> str:
     """Check if the Stobo API is reachable. Use this to diagnose connection issues before running audits."""
+    import importlib.metadata
+
     import httpx
+    from packaging.version import Version
 
     base_url = os.environ.get("STOBO_BASE_URL", "https://api.trystobo.com")
     api_key = os.environ.get("STOBO_API_KEY", "")
@@ -248,6 +275,22 @@ def check_connection() -> str:
         resp = httpx.get(f"{base_url}/api/v1/health", timeout=10)
         result["status"] = "ok" if resp.status_code == 200 else "error"
         result["http_code"] = resp.status_code
+
+        # Check for MCP version upgrade
+        if resp.status_code == 200:
+            try:
+                body = resp.json()
+                installed = importlib.metadata.version("stobo-mcp")
+                latest = body.get("latest_mcp_version")
+                if latest and Version(installed) < Version(latest):
+                    result["update_available"] = {
+                        "installed": installed,
+                        "latest": latest,
+                        "upgrade": "pip install --upgrade stobo-mcp",
+                        "changelog": body.get("changelog_url", ""),
+                    }
+            except Exception:
+                pass
     except httpx.ConnectError as e:
         result["status"] = "connection_refused"
         result["error"] = str(e)

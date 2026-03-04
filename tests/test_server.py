@@ -4,9 +4,9 @@ from stobo_mcp.server import mcp
 
 
 def test_tool_count():
-    """All 11 tools should be registered."""
+    """All 12 tools should be registered."""
     tools = mcp._tool_manager._tools
-    assert len(tools) == 11, f"Expected 11 tools, got {len(tools)}: {list(tools.keys())}"
+    assert len(tools) == 12, f"Expected 12 tools, got {len(tools)}: {list(tools.keys())}"
 
 
 def test_required_tools_present():
@@ -20,6 +20,7 @@ def test_required_tools_present():
         "generate_robots_txt",
         "generate_sitemap",
         "generate_freshness_code",
+        "generate_fix_brief",
         "rewrite_article",
         "extract_tone",
         "audit_freshness",
@@ -41,6 +42,7 @@ def test_no_extra_tools():
         "generate_robots_txt",
         "generate_sitemap",
         "generate_freshness_code",
+        "generate_fix_brief",
         "rewrite_article",
         "extract_tone",
         "audit_freshness",
