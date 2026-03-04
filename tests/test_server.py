@@ -137,6 +137,10 @@ def test_trim_site_audit():
     # Sitemap categories have no URL lists
     assert "urls" not in trimmed["sitemap_discovery"]["categories"][0]
 
+    # Next step hint
+    assert "_next_step" in trimmed
+    assert "abc-123" in trimmed["_next_step"]
+
     # Size check
     size = len(json.dumps(trimmed))
     assert size < 8192, f"Trimmed response is {size} bytes, expected < 8KB"

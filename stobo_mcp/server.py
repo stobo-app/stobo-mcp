@@ -216,6 +216,14 @@ def _trim_site_audit(data: dict) -> dict:
         if key in data:
             out[key] = data[key]
 
+    # Hint for Claude to offer full details
+    audit_id = (seo or {}).get("id")
+    if audit_id:
+        out["_next_step"] = (
+            f"This is a summary. For the full audit with all failing checks and "
+            f"fix instructions, call generate_fix_brief with audit_id '{audit_id}'."
+        )
+
     return out
 
 
