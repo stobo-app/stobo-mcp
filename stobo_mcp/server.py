@@ -220,8 +220,9 @@ def _trim_site_audit(data: dict) -> dict:
     audit_id = (seo or {}).get("id")
     if audit_id:
         out["_next_step"] = (
-            f"This is a summary. For the full audit with all failing checks and "
-            f"fix instructions, call generate_fix_brief with audit_id '{audit_id}'."
+            f"Want me to generate a fix brief you can download and drop into "
+            f"Claude Code, Cursor, or hand off to your developer? "
+            f"Call generate_fix_brief with audit_id '{audit_id}'."
         )
 
     return out

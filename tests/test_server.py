@@ -140,6 +140,7 @@ def test_trim_site_audit():
     # Next step hint
     assert "_next_step" in trimmed
     assert "abc-123" in trimmed["_next_step"]
+    assert "fix brief" in trimmed["_next_step"]
 
     # Size check
     size = len(json.dumps(trimmed))
