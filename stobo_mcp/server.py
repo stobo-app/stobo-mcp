@@ -150,7 +150,14 @@ def _trim_site_audit(data: dict) -> dict:
     seo = data.get("seo_audit")
     if seo and isinstance(seo, dict):
         trimmed_seo: dict = {}
-        for key in ("id", "grade", "overall_score", "total_points", "max_points", "category_scores"):
+        for key in (
+            "id",
+            "grade",
+            "overall_score",
+            "total_points",
+            "max_points",
+            "category_scores",
+        ):
             if key in seo:
                 trimmed_seo[key] = seo[key]
         recs = seo.get("recommendations") or []
@@ -170,7 +177,11 @@ def _trim_site_audit(data: dict) -> dict:
         checks = aeo.get("checks")
         if checks and isinstance(checks, dict):
             trimmed_aeo["checks"] = {
-                name: {k: v for k, v in check.items() if k in ("status", "score", "max_points", "message")}
+                name: {
+                    k: v
+                    for k, v in check.items()
+                    if k in ("status", "score", "max_points", "message")
+                }
                 for name, check in checks.items()
             }
         out["aeo_audit"] = trimmed_aeo
@@ -196,8 +207,7 @@ def _trim_site_audit(data: dict) -> dict:
         cats = sitemap.get("categories")
         if cats and isinstance(cats, list):
             trimmed_sitemap["categories"] = [
-                {k: c[k] for k in ("name", "slug", "count") if k in c}
-                for c in cats
+                {k: c[k] for k in ("name", "slug", "count") if k in c} for c in cats
             ]
         out["sitemap_discovery"] = trimmed_sitemap
 
