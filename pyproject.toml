@@ -4,15 +4,15 @@ build-backend = "hatchling.build"
 
 [project]
 name = "stobo-mcp"
-version = "0.5.4"
-description = "MCP server for Stobo — AI-powered SEO/AEO content optimization"
+version = "0.6.0"
+description = "Stobo MCP server — retired (the Stobo SEO/AEO audit service was shut down in 2026)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{name = "Stobo", email = "hello@trystobo.com"}]
 keywords = ["mcp", "seo", "aeo", "ai", "claude", "model-context-protocol"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 7 - Inactive",
     "Intended Audience :: Developers",
     "Topic :: Internet :: WWW/HTTP",
     "License :: OSI Approved :: MIT License",
@@ -20,8 +20,6 @@ classifiers = [
 ]
 dependencies = [
     "mcp>=1.23.0",
-    "packaging>=23.0",
-    "stobo>=0.3.8",
 ]
 
 [project.optional-dependencies]
