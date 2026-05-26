@@ -3,7 +3,7 @@
 
 # Stobo MCP Server
 
-**Docs:** [docs.trystobo.com](https://docs.trystobo.com)
+> ⚠️ **Retired (May 2026).** The Stobo SEO/AEO audit service has been shut down and its API is no longer available. This MCP server no longer performs audits — it exposes a single `stobo_status` tool that reports the retirement and nothing else. Published versions remain installable for archival purposes only. Thank you to everyone who used it.
 
 Audit any site for SEO, AEO, and E-E-A-T from Claude Desktop. Get a structured fix brief your developer can drop straight into Claude Code, Cursor, or VS Code and start shipping.
 

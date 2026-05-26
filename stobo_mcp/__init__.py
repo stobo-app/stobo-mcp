@@ -1,3 +1,3 @@
-"""Stobo MCP Server — AI-powered SEO & AEO audit tools for Claude Desktop."""
+"""Stobo MCP Server — retired (the Stobo SEO/AEO audit service was shut down in 2026)."""
 
-__version__ = "0.5.4"
+__version__ = "0.6.0"
